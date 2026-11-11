@@ -1,0 +1,37 @@
+{
+  "id": "helsinki-kluuvi",
+  "city": "helsinki",
+  "name": "Helsinki - Kluuvi",
+  "status": "later (M5: 用來證明加區域不需改 core)",
+  "bbox": {
+    "south": 60.1665,
+    "north": 60.177,
+    "west": 24.933,
+    "east": 24.946,
+    "note": "約數；東邊與 Kruununhaka 相接，共用同一個原點，之後可以拼起來"
+  },
+  "chunkSizeMeters": 250,
+  "render": {
+    "internalWidth": 480,
+    "internalHeight": 270,
+    "palette": "helsinki-day-16",
+    "defaultCamera": {
+      "azimuthDeg": 45,
+      "elevationDeg": 30,
+      "zoom": 1.0,
+      "projection": "orthographic"
+    }
+  },
+  "presets": [
+    "day",
+    "dusk"
+  ],
+  "dataSources": {
+    "buildings": "helsinki3d-citygml",
+    "terrain": "helsinki3d-citygml",
+    "roads": "osm",
+    "parks": "osm",
+    "water": "osm",
+    "trees": "osm"
+  }
+}

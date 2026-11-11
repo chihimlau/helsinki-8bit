@@ -1,0 +1,10 @@
+---
+description: 地標、地標 ID 和故事檔案的規則
+globs: ["areas/**/landmarks.json", "stories/**"]
+alwaysApply: false
+---
+
+- 地標 id 格式 hel-xxx（不含區域名），一旦確定永不改變
+- 找不到對應的建築時標記 unresolved，不要猜
+- 校正後移除 approx 標記，填入 helsinki3dId 和 osmId
+- 不要編寫故事內容；story 欄位留空（故事之後才做）

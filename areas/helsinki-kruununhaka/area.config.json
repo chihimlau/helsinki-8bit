@@ -1,0 +1,37 @@
+{
+  "id": "helsinki-kruununhaka",
+  "city": "helsinki",
+  "name": "Helsinki - Kruununhaka",
+  "status": "mvp",
+  "bbox": {
+    "south": 60.1665,
+    "north": 60.1755,
+    "west": 24.946,
+    "east": 24.964,
+    "note": "約數，約 1km x 1km。範圍用 bbox，不是官方行政區邊界，pipeline 可微調"
+  },
+  "chunkSizeMeters": 250,
+  "render": {
+    "internalWidth": 480,
+    "internalHeight": 270,
+    "palette": "helsinki-day-16",
+    "defaultCamera": {
+      "azimuthDeg": 45,
+      "elevationDeg": 30,
+      "zoom": 1.0,
+      "projection": "orthographic"
+    }
+  },
+  "presets": [
+    "day",
+    "dusk"
+  ],
+  "dataSources": {
+    "buildings": "helsinki3d-citygml",
+    "terrain": "helsinki3d-citygml",
+    "roads": "osm",
+    "parks": "osm",
+    "water": "osm",
+    "trees": "osm"
+  }
+}

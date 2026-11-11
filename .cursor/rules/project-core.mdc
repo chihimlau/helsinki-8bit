@@ -1,0 +1,12 @@
+---
+description: Helsinki 8-bit City 專案總則（成本、範圍、工作方式）
+alwaysApply: true
+---
+
+完整規則在 AGENTS.md，這裡只放最不能違反的幾條：
+
+- 純靜態網站；不使用後端、資料庫、付費 API、圖像生成模型
+- 一次只做一個 milestone（docs/MILESTONES.md），動手前先出計劃
+- 不做 docs/MVP.md 裡「不在 MVP」的東西；新點子寫入 docs/DECISIONS.md，不要實作
+- 不可以把 token、密碼、API key 寫進任何檔案
+- 完成前要自己開頁面檢查；只報告真正看到的結果

@@ -1,0 +1,23 @@
+{
+  "id": "helsinki",
+  "name": "Helsinki",
+  "crs": {
+    "code": "EPSG:3879",
+    "name": "ETRS-GK25",
+    "unit": "metre",
+    "verticalDatum": "N2000"
+  },
+  "origin": {
+    "x": null,
+    "y": null,
+    "note": "pipeline 第一次運行時，以 Senate Square 附近的 EPSG:3879 座標設定，之後所有 Helsinki 區域共用，不可再改"
+  },
+  "sources": [
+    "helsinki3d-citygml",
+    "osm"
+  ],
+  "attribution": [
+    "Helsinki 3D: City of Helsinki, CC BY 4.0",
+    "© OpenStreetMap contributors"
+  ]
+}

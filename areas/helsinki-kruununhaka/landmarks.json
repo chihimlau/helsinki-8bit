@@ -1,0 +1,89 @@
+{
+  "_note": "座標為約數 (approx)，必須由 pipeline 對應 Helsinki 3D 建築 / OSM 物件後校正。id 一旦確定永不改變，id 不包含區域名。",
+  "landmarks": [
+    {
+      "id": "hel-senate-square",
+      "name": "Senate Square",
+      "lat": 60.1699,
+      "lon": 24.9525,
+      "type": "square",
+      "approx": true,
+      "helsinki3dId": null,
+      "osmId": null,
+      "story": null,
+      "priority": "must"
+    },
+    {
+      "id": "hel-helsinki-cathedral",
+      "name": "Helsinki Cathedral",
+      "lat": 60.1704,
+      "lon": 24.9522,
+      "type": "building",
+      "approx": true,
+      "helsinki3dId": null,
+      "osmId": null,
+      "story": null,
+      "priority": "must"
+    },
+    {
+      "id": "hel-government-palace",
+      "name": "Government Palace",
+      "lat": 60.1693,
+      "lon": 24.9533,
+      "type": "building",
+      "approx": true,
+      "helsinki3dId": null,
+      "osmId": null,
+      "story": null,
+      "priority": "must"
+    },
+    {
+      "id": "hel-university-main-building",
+      "name": "University of Helsinki Main Building",
+      "lat": 60.1697,
+      "lon": 24.951,
+      "type": "building",
+      "approx": true,
+      "helsinki3dId": null,
+      "osmId": null,
+      "story": null,
+      "priority": "nice"
+    },
+    {
+      "id": "hel-national-library",
+      "name": "National Library of Finland",
+      "lat": 60.17,
+      "lon": 24.9499,
+      "type": "building",
+      "approx": true,
+      "helsinki3dId": null,
+      "osmId": null,
+      "story": null,
+      "priority": "nice"
+    },
+    {
+      "id": "hel-market-square",
+      "name": "Market Square (Kauppatori)",
+      "lat": 60.1675,
+      "lon": 24.953,
+      "type": "square",
+      "approx": true,
+      "helsinki3dId": null,
+      "osmId": null,
+      "story": null,
+      "priority": "must"
+    },
+    {
+      "id": "hel-presidential-palace",
+      "name": "Presidential Palace",
+      "lat": 60.1672,
+      "lon": 24.9553,
+      "type": "building",
+      "approx": true,
+      "helsinki3dId": null,
+      "osmId": null,
+      "story": null,
+      "priority": "nice"
+    }
+  ]
+}

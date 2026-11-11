@@ -1,0 +1,16 @@
+---
+description: pipeline、資料來源、座標與資料格式的規則
+globs: ["pipeline/**", "cities/**", "areas/**/data/**", "areas/**/area.config.json"]
+alwaysApply: false
+---
+
+- 每個資料來源一個 adapter（pipeline/sources/），輸出同一種內部格式
+- 座標一律轉成 city.config.json 的 crs（Helsinki 為 EPSG:3879），再減去共用原點；輸出只有世界座標（米）
+- 建築 ID 優先用 GMLID，保存 RATU、VTJ-PRT、osmId（如有）
+- 缺高度：優先來源高度，其次 building:levels * 3.2 米，最後預設值；統計要記錄各自數量
+- LoD2 屋頂要簡化，輸出必須在效能預算內（見 AGENTS.md）
+- 原始資料存 areas/<id>/raw/（不 commit）；處理後 areas/<id>/data/ 要 commit
+- chunk manifest 要有 schemaVersion
+- 下載速率不超過每秒一次，使用清楚的 User-Agent；不要重複下載已 cache 的資料
+- 不使用 3D mesh（OBJ / 3MX）作為網頁資料
+- 某個來源不可用時如實報告，不要假裝成功

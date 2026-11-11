@@ -1,0 +1,14 @@
+---
+description: core/ 渲染與互動程式的規則
+globs: ["core/**", "index.html"]
+alwaysApply: false
+---
+
+- core/ 內不可出現任何城市名稱、經緯度或投影座標；所有地區參數來自 area.config.json 和 city.config.json
+- 正交相機（OrthographicCamera），方位角 45°、仰角 30°；MVP 不做旋轉
+- 低解像度 render target（約 480x270）+ nearest-neighbour 放大
+- 不使用大型貼圖；窗戶和牆身用 shader 或程式生成
+- 按區塊合併 mesh，禁止每棟建築一個獨立物件；點擊高亮用建築 ID 對應 mesh 範圍或 picking buffer
+- 手機限制 pixel ratio；閒置不渲染
+- 觸控：單指拖動、雙指縮放、單擊選取
+- 每次修改後確認 ?debug=1 面板的數字仍然正確
