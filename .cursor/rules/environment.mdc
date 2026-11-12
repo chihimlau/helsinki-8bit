@@ -1,0 +1,11 @@
+---
+description: 開發環境與網絡規則（公司電腦連不到外部網站，改用雲端）
+alwaysApply: true
+---
+
+- 本機是公司電腦，網絡會攔截 HTTPS，連不到 kartta.hel.fi，npm 也可能失敗。所有需要連外部網站的工作（下載資料、npm install、build、測試）一律在 Cursor Cloud Agent 或 GitHub Actions 執行，不要在本機嘗試
+- 絕對不可以關閉 TLS 驗證：不使用 NODE_TLS_REJECT_UNAUTHORIZED=0、curl -k、--insecure、strict-ssl=false，也不可寫進任何檔案
+- 不要匯出、安裝或設定任何公司證書；不要碰 AWS、SoftwareOne、公司帳戶或任何 token
+- 在新 branch 上工作並開 pull request；不要直接 push 到 main；合併由使用者自己按
+- 如果雲端環境連不到某個網站，停下並如實報告，不要換其他方法硬做
+- 只報告真正測試到的結果，不要猜
