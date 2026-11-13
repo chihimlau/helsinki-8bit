@@ -1,5 +1,6 @@
-import { mkdirSync, writeFileSync } from 'node:fs';
+import { mkdirSync, readdirSync, unlinkSync, writeFileSync } from 'node:fs';
 import { join } from 'node:path';
+import { gzipSync } from 'node:zlib';
 import type { AreaDataset, ChunkData, ChunkManifest } from '../types';
 
 function buildingCenter(b: AreaDataset['buildings'][number]): { x: number; z: number } {
@@ -81,10 +82,18 @@ export function writeChunkedArea(opts: {
     ensure(cx, cz).water.push(w);
   }
 
+  // Remove previous plain/gzip chunk files so we don't leave stale assets
+  for (const name of readdirSync(opts.outDir)) {
+    if (/^chunk-.*\.json(\.gz)?$/.test(name)) {
+      unlinkSync(join(opts.outDir, name));
+    }
+  }
+
   const chunks: ChunkManifest['chunks'] = [];
   for (const chunk of chunkMap.values()) {
-    const file = `chunk-${chunk.id}.json`;
-    writeFileSync(join(opts.outDir, file), JSON.stringify(chunk));
+    const file = `chunk-${chunk.id}.json.gz`;
+    const json = JSON.stringify(chunk);
+    writeFileSync(join(opts.outDir, file), gzipSync(Buffer.from(json, 'utf8')));
     const [sx, sz] = chunk.id.split('_').map(Number);
     chunks.push({
       id: chunk.id,
@@ -98,7 +107,7 @@ export function writeChunkedArea(opts: {
   }
 
   const manifest: ChunkManifest = {
-    schemaVersion: 1,
+    schemaVersion: 2,
     areaId: opts.areaId,
     cityId: opts.cityId,
     origin: opts.origin,

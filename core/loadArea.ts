@@ -23,16 +23,26 @@ export async function loadManifest(dataBaseUrl: string): Promise<ManifestLoad> {
   return { manifest, bytesLoaded, dataBaseUrl };
 }
 
+async function gunzipToText(buf: ArrayBuffer): Promise<string> {
+  if (typeof DecompressionStream === 'undefined') {
+    throw new Error('DecompressionStream unsupported — use a modern browser');
+  }
+  const stream = new Response(buf).body!.pipeThrough(new DecompressionStream('gzip'));
+  return await new Response(stream).text();
+}
+
 export async function fetchChunk(
   dataBaseUrl: string,
   file: string,
 ): Promise<{ chunk: ChunkJson; bytes: number }> {
   const res = await fetch(`${dataBaseUrl}/${file}`);
   if (!res.ok) throw new Error(`chunk ${file} HTTP ${res.status}`);
-  const text = await res.text();
+  const buf = await res.arrayBuffer();
+  const bytes = buf.byteLength;
+  const text = file.endsWith('.gz') ? await gunzipToText(buf) : new TextDecoder().decode(buf);
   return {
     chunk: JSON.parse(text) as ChunkJson,
-    bytes: new TextEncoder().encode(text).length,
+    bytes,
   };
 }
 

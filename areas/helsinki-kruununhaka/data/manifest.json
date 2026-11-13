@@ -1,5 +1,5 @@
 {
-  "schemaVersion": 1,
+  "schemaVersion": 2,
   "areaId": "helsinki-kruununhaka",
   "cityId": "helsinki",
   "origin": {
@@ -16,7 +16,7 @@
   "chunks": [
     {
       "id": "-250_-250",
-      "file": "chunk--250_-250.json",
+      "file": "chunk--250_-250.json.gz",
       "minX": -250,
       "maxX": 0,
       "minZ": -250,
@@ -25,7 +25,7 @@
     },
     {
       "id": "-250_-500",
-      "file": "chunk--250_-500.json",
+      "file": "chunk--250_-500.json.gz",
       "minX": -250,
       "maxX": 0,
       "minZ": -500,
@@ -34,7 +34,7 @@
     },
     {
       "id": "-250_-750",
-      "file": "chunk--250_-750.json",
+      "file": "chunk--250_-750.json.gz",
       "minX": -250,
       "maxX": 0,
       "minZ": -750,
@@ -43,7 +43,7 @@
     },
     {
       "id": "-250_0",
-      "file": "chunk--250_0.json",
+      "file": "chunk--250_0.json.gz",
       "minX": -250,
       "maxX": 0,
       "minZ": 0,
@@ -52,7 +52,7 @@
     },
     {
       "id": "-250_250",
-      "file": "chunk--250_250.json",
+      "file": "chunk--250_250.json.gz",
       "minX": -250,
       "maxX": 0,
       "minZ": 250,
@@ -61,7 +61,7 @@
     },
     {
       "id": "-500_-250",
-      "file": "chunk--500_-250.json",
+      "file": "chunk--500_-250.json.gz",
       "minX": -500,
       "maxX": -250,
       "minZ": -250,
@@ -70,7 +70,7 @@
     },
     {
       "id": "-500_-500",
-      "file": "chunk--500_-500.json",
+      "file": "chunk--500_-500.json.gz",
       "minX": -500,
       "maxX": -250,
       "minZ": -500,
@@ -79,7 +79,7 @@
     },
     {
       "id": "-500_-750",
-      "file": "chunk--500_-750.json",
+      "file": "chunk--500_-750.json.gz",
       "minX": -500,
       "maxX": -250,
       "minZ": -750,
@@ -88,7 +88,7 @@
     },
     {
       "id": "-500_0",
-      "file": "chunk--500_0.json",
+      "file": "chunk--500_0.json.gz",
       "minX": -500,
       "maxX": -250,
       "minZ": 0,
@@ -97,7 +97,7 @@
     },
     {
       "id": "-500_250",
-      "file": "chunk--500_250.json",
+      "file": "chunk--500_250.json.gz",
       "minX": -500,
       "maxX": -250,
       "minZ": 250,
@@ -106,7 +106,7 @@
     },
     {
       "id": "0_-250",
-      "file": "chunk-0_-250.json",
+      "file": "chunk-0_-250.json.gz",
       "minX": 0,
       "maxX": 250,
       "minZ": -250,
@@ -115,7 +115,7 @@
     },
     {
       "id": "0_-500",
-      "file": "chunk-0_-500.json",
+      "file": "chunk-0_-500.json.gz",
       "minX": 0,
       "maxX": 250,
       "minZ": -500,
@@ -124,7 +124,7 @@
     },
     {
       "id": "0_-750",
-      "file": "chunk-0_-750.json",
+      "file": "chunk-0_-750.json.gz",
       "minX": 0,
       "maxX": 250,
       "minZ": -750,
@@ -133,7 +133,7 @@
     },
     {
       "id": "0_0",
-      "file": "chunk-0_0.json",
+      "file": "chunk-0_0.json.gz",
       "minX": 0,
       "maxX": 250,
       "minZ": 0,
@@ -142,7 +142,7 @@
     },
     {
       "id": "0_250",
-      "file": "chunk-0_250.json",
+      "file": "chunk-0_250.json.gz",
       "minX": 0,
       "maxX": 250,
       "minZ": 250,
@@ -151,7 +151,7 @@
     },
     {
       "id": "250_-250",
-      "file": "chunk-250_-250.json",
+      "file": "chunk-250_-250.json.gz",
       "minX": 250,
       "maxX": 500,
       "minZ": -250,
@@ -160,7 +160,7 @@
     },
     {
       "id": "250_-500",
-      "file": "chunk-250_-500.json",
+      "file": "chunk-250_-500.json.gz",
       "minX": 250,
       "maxX": 500,
       "minZ": -500,
@@ -169,7 +169,7 @@
     },
     {
       "id": "250_-750",
-      "file": "chunk-250_-750.json",
+      "file": "chunk-250_-750.json.gz",
       "minX": 250,
       "maxX": 500,
       "minZ": -750,
@@ -178,7 +178,7 @@
     },
     {
       "id": "250_0",
-      "file": "chunk-250_0.json",
+      "file": "chunk-250_0.json.gz",
       "minX": 250,
       "maxX": 500,
       "minZ": 0,
@@ -187,7 +187,7 @@
     },
     {
       "id": "250_250",
-      "file": "chunk-250_250.json",
+      "file": "chunk-250_250.json.gz",
       "minX": 250,
       "maxX": 500,
       "minZ": 250,
@@ -196,7 +196,7 @@
     },
     {
       "id": "500_-250",
-      "file": "chunk-500_-250.json",
+      "file": "chunk-500_-250.json.gz",
       "minX": 500,
       "maxX": 750,
       "minZ": -250,
@@ -205,7 +205,7 @@
     },
     {
       "id": "500_-500",
-      "file": "chunk-500_-500.json",
+      "file": "chunk-500_-500.json.gz",
       "minX": 500,
       "maxX": 750,
       "minZ": -500,
@@ -214,7 +214,7 @@
     },
     {
       "id": "500_-750",
-      "file": "chunk-500_-750.json",
+      "file": "chunk-500_-750.json.gz",
       "minX": 500,
       "maxX": 750,
       "minZ": -750,
@@ -223,7 +223,7 @@
     },
     {
       "id": "500_0",
-      "file": "chunk-500_0.json",
+      "file": "chunk-500_0.json.gz",
       "minX": 500,
       "maxX": 750,
       "minZ": 0,
@@ -232,7 +232,7 @@
     },
     {
       "id": "500_250",
-      "file": "chunk-500_250.json",
+      "file": "chunk-500_250.json.gz",
       "minX": 500,
       "maxX": 750,
       "minZ": 250,
@@ -241,7 +241,7 @@
     },
     {
       "id": "750_0",
-      "file": "chunk-750_0.json",
+      "file": "chunk-750_0.json.gz",
       "minX": 750,
       "maxX": 1000,
       "minZ": 0,

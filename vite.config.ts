@@ -31,6 +31,10 @@ function areaDataPlugin(): Plugin {
         const file = join(process.cwd(), url);
         if (existsSync(file) && statSync(file).isFile()) {
           if (file.endsWith('.json')) res.setHeader('Content-Type', 'application/json; charset=utf-8');
+          if (file.endsWith('.gz')) {
+            res.setHeader('Content-Type', 'application/gzip');
+            // Do NOT set Content-Encoding: browser fetch + DecompressionStream handles body
+          }
           res.end(readFileSync(file));
           return;
         }

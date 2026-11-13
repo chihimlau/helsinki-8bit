@@ -1,6 +1,7 @@
 import { describe, expect, it } from 'vitest';
 import { readFileSync, existsSync } from 'node:fs';
 import { join } from 'node:path';
+import { gunzipSync } from 'node:zlib';
 
 describe('landmarks', () => {
   it('ids are unique and have no area name', () => {
@@ -28,11 +29,14 @@ describe('manifest (when present)', () => {
       schemaVersion: number;
       chunks: Array<{ file: string }>;
     };
-    expect(manifest.schemaVersion).toBeGreaterThanOrEqual(1);
+    expect(manifest.schemaVersion).toBeGreaterThanOrEqual(2);
     for (const c of manifest.chunks) {
-      const chunk = JSON.parse(
-        readFileSync(join('areas', 'helsinki-kruununhaka', 'data', c.file), 'utf8'),
-      ) as { buildings: Array<{ height: number }> };
+      const filePath = join('areas', 'helsinki-kruununhaka', 'data', c.file);
+      const raw = readFileSync(filePath);
+      const text = c.file.endsWith('.gz')
+        ? gunzipSync(raw).toString('utf8')
+        : raw.toString('utf8');
+      const chunk = JSON.parse(text) as { buildings: Array<{ height: number }> };
       for (const b of chunk.buildings) {
         expect(b.height).toBeGreaterThan(0);
       }

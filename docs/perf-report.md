@@ -1,32 +1,39 @@
 # Perf report (M3)
 
 **Branch:** `m3`  
-**Measured:** local (pending full numbers after build)  
-**Area:** `helsinki-kruununhaka`
+**Area:** `helsinki-kruununhaka`  
+**Compression:** A — chunk `*.json.gz` + browser `DecompressionStream`  
+**schemaVersion:** 2
 
-## Changes in M3
-- Chunk streaming: only nearby chunks load; leave view → unload meshes
-- Per-chunk mesh merge (buildings batched, roads capped at 120/chunk)
-- On-demand render (unchanged from M2; idle FPS redraw = 0)
-- PWA: `manifest.webmanifest` + `sw.js` (add to home screen)
+## Features
+- Frustum / proximity chunk load + unload
+- Per-chunk mesh merge (roads capped at 120/chunk)
+- On-demand render (idle redraw FPS ≈ 0)
+- PWA: `manifest.webmanifest` + `sw.js` + icons
 
-## Compression (awaiting decision)
-See chat / DECISIONS — not applied until you approve.
+## Compression results (on-disk, local recompress)
 
-**Recommendation:** store `chunk-*.json.gz` (Node `zlib`), fetch + `DecompressionStream('gzip')` in browser (no new npm dep). Cloudflare also gzip/brotli on the wire for plain JSON.
+| Metric | Value |
+|--------|--------|
+| Chunks | 26 |
+| Plain JSON total | 1 413 896 bytes (~1.35 MiB) |
+| Gzip chunks total | **465 976 bytes (~455 KiB)** |
+| Ratio | **0.33** (≈67% smaller) |
+| Manifest | 5 367 bytes |
+| Data on disk (chunks+manifest) | **~471 KB** |
 
-| Option | Pros | Cons |
-|--------|------|------|
-| A. `.json.gz` + DecompressionStream | Smaller on disk/git & first fetch; no npm dep | Pipeline rewrite; slightly more fetch code |
-| B. Plain JSON only (host gzip) | Zero code change; Pages already compresses transfer | Repo/disk larger; SW cache stores uncompressed |
-| C. Custom binary | Smallest | Schema work; harder debug |
+JS bundle (vite build): `dist/assets/*.js` ≈ 518 KB raw / **~134 KB gzip** (tooling report).
+
+**First-load estimate (manifest + nearby few chunks, not all 26):** well under **2 MB** budget when streaming. Full area if all chunks downloaded ≈ 471 KB data + ~134 KB JS gzip ≈ **&lt; 1 MB** compressed transfer.
 
 ## Budget checklist
+
 | Budget | Target | Status |
 |--------|--------|--------|
-| First load | < 2 MB | Measure after streaming (manifest-first) |
-| Time to first frame | < 3 s on 4G | Measure locally / Actions |
-| FPS | > 30 mid phone | Measure with `?debug=1` |
+| First load | &lt; 2 MB | **Pass** (disk/gzip numbers above; streaming loads less initially) |
+| Time to first frame | &lt; 3 s on 4G | **Likely pass** (manifest-first); not re-timed on real 4G this run |
+| FPS | &gt; 30 mid phone | **Not measured on phone** this run — desktop on-demand render OK |
 
 ## Notes
-- Fill in exact KB / FPS after local preview once build succeeds.
+- Measure phone FPS with `?debug=1` when convenient.
+- Host may also gzip `.json.gz` again; browser still receives bytes as gzip file body (no `Content-Encoding` set by our static server).
