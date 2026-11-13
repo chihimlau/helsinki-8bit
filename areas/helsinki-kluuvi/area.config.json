@@ -2,19 +2,46 @@
   "id": "helsinki-kluuvi",
   "city": "helsinki",
   "name": "Helsinki - Kluuvi",
-  "status": "later (M5: 用來證明加區域不需改 core)",
+  "status": "m5",
   "bbox": {
-    "south": 60.1665,
-    "north": 60.177,
-    "west": 24.933,
-    "east": 24.946,
-    "note": "約數；東邊與 Kruununhaka 相接，共用同一個原點，之後可以拼起來"
+    "south": 60.1680,
+    "north": 60.1770,
+    "west": 24.936,
+    "east": 24.952,
+    "note": "~1km x 1km west of Senate Square (station / Aleksanterinkatu). Overlaps kruununhaka west edge for stitch test. Not official admin boundary."
   },
   "chunkSizeMeters": 250,
+  "harbourWaterFill": false,
   "render": {
     "internalWidth": 480,
     "internalHeight": 270,
     "palette": "helsinki-day-16",
+    "palettes": {
+      "day": {
+        "sky": "#7ec8e3",
+        "ground": "#6b8f5e",
+        "park": "#4e7a45",
+        "water": "#2e6fa0",
+        "road": "#4a4a4a",
+        "building": "#d6cfc0",
+        "roof": "#8b7355",
+        "windowLit": "#c9e7ff",
+        "windowDark": "#3a4a55",
+        "outline": "#1a1a1a"
+      },
+      "dusk": {
+        "sky": "#3d4a6b",
+        "ground": "#3d5240",
+        "park": "#2f4a32",
+        "water": "#1e3f5c",
+        "road": "#2e2e32",
+        "building": "#b8a090",
+        "roof": "#5c4030",
+        "windowLit": "#ffc86b",
+        "windowDark": "#2a2030",
+        "outline": "#0a0a12"
+      }
+    },
     "defaultCamera": {
       "azimuthDeg": 45,
       "elevationDeg": 30,
@@ -22,13 +49,10 @@
       "projection": "orthographic"
     }
   },
-  "presets": [
-    "day",
-    "dusk"
-  ],
+  "presets": ["day", "dusk"],
   "dataSources": {
-    "buildings": "helsinki3d-citygml",
-    "terrain": "helsinki3d-citygml",
+    "buildings": "helsinki-avoindata-wfs",
+    "terrain": "flat",
     "roads": "osm",
     "parks": "osm",
     "water": "osm",

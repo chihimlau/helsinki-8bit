@@ -8,16 +8,16 @@
     "verticalDatum": "N2000"
   },
   "origin": {
-    "x": null,
-    "y": null,
-    "note": "pipeline 第一次運行時，以 Senate Square 附近的 EPSG:3879 座標設定，之後所有 Helsinki 區域共用，不可再改"
+    "x": 25497363.102,
+    "y": 6673002.961,
+    "note": "Locked to Senate Square (lon 24.9525, lat 60.1699) EPSG:3879. Do not change."
   },
   "sources": [
-    "helsinki3d-citygml",
+    "helsinki-avoindata-wfs",
     "osm"
   ],
   "attribution": [
-    "Helsinki 3D: City of Helsinki, CC BY 4.0",
+    "City of Helsinki open geographic data (avoindata), CC BY 4.0",
     "© OpenStreetMap contributors"
   ]
 }

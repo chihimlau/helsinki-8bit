@@ -1,0 +1,275 @@
+{
+  "schemaVersion": 2,
+  "areaId": "helsinki-kruununhaka",
+  "cityId": "helsinki",
+  "origin": {
+    "x": 25497363.102,
+    "y": 6673002.961
+  },
+  "chunkSizeMeters": 250,
+  "bounds": {
+    "minX": -750,
+    "maxX": 1000,
+    "minZ": -1000,
+    "maxZ": 750
+  },
+  "chunks": [
+    {
+      "id": "-250_-250",
+      "file": "chunk--250_-250.json.gz",
+      "minX": -250,
+      "maxX": 0,
+      "minZ": -250,
+      "maxZ": 0,
+      "buildingCount": 30
+    },
+    {
+      "id": "-250_-500",
+      "file": "chunk--250_-500.json.gz",
+      "minX": -250,
+      "maxX": 0,
+      "minZ": -500,
+      "maxZ": -250,
+      "buildingCount": 24
+    },
+    {
+      "id": "-250_-750",
+      "file": "chunk--250_-750.json.gz",
+      "minX": -250,
+      "maxX": 0,
+      "minZ": -750,
+      "maxZ": -500,
+      "buildingCount": 10
+    },
+    {
+      "id": "-250_0",
+      "file": "chunk--250_0.json.gz",
+      "minX": -250,
+      "maxX": 0,
+      "minZ": 0,
+      "maxZ": 250,
+      "buildingCount": 23
+    },
+    {
+      "id": "-250_250",
+      "file": "chunk--250_250.json.gz",
+      "minX": -250,
+      "maxX": 0,
+      "minZ": 250,
+      "maxZ": 500,
+      "buildingCount": 18
+    },
+    {
+      "id": "-500_-250",
+      "file": "chunk--500_-250.json.gz",
+      "minX": -500,
+      "maxX": -250,
+      "minZ": -250,
+      "maxZ": 0,
+      "buildingCount": 30
+    },
+    {
+      "id": "-500_-500",
+      "file": "chunk--500_-500.json.gz",
+      "minX": -500,
+      "maxX": -250,
+      "minZ": -500,
+      "maxZ": -250,
+      "buildingCount": 10
+    },
+    {
+      "id": "-500_-750",
+      "file": "chunk--500_-750.json.gz",
+      "minX": -500,
+      "maxX": -250,
+      "minZ": -750,
+      "maxZ": -500,
+      "buildingCount": 7
+    },
+    {
+      "id": "-500_0",
+      "file": "chunk--500_0.json.gz",
+      "minX": -500,
+      "maxX": -250,
+      "minZ": 0,
+      "maxZ": 250,
+      "buildingCount": 17
+    },
+    {
+      "id": "-500_250",
+      "file": "chunk--500_250.json.gz",
+      "minX": -500,
+      "maxX": -250,
+      "minZ": 250,
+      "maxZ": 500,
+      "buildingCount": 7
+    },
+    {
+      "id": "0_-250",
+      "file": "chunk-0_-250.json.gz",
+      "minX": 0,
+      "maxX": 250,
+      "minZ": -250,
+      "maxZ": 0,
+      "buildingCount": 39
+    },
+    {
+      "id": "0_-500",
+      "file": "chunk-0_-500.json.gz",
+      "minX": 0,
+      "maxX": 250,
+      "minZ": -500,
+      "maxZ": -250,
+      "buildingCount": 45
+    },
+    {
+      "id": "0_-750",
+      "file": "chunk-0_-750.json.gz",
+      "minX": 0,
+      "maxX": 250,
+      "minZ": -750,
+      "maxZ": -500,
+      "buildingCount": 45
+    },
+    {
+      "id": "0_0",
+      "file": "chunk-0_0.json.gz",
+      "minX": 0,
+      "maxX": 250,
+      "minZ": 0,
+      "maxZ": 250,
+      "buildingCount": 18
+    },
+    {
+      "id": "0_250",
+      "file": "chunk-0_250.json.gz",
+      "minX": 0,
+      "maxX": 250,
+      "minZ": 250,
+      "maxZ": 500,
+      "buildingCount": 9
+    },
+    {
+      "id": "250_-250",
+      "file": "chunk-250_-250.json.gz",
+      "minX": 250,
+      "maxX": 500,
+      "minZ": -250,
+      "maxZ": 0,
+      "buildingCount": 30
+    },
+    {
+      "id": "250_-500",
+      "file": "chunk-250_-500.json.gz",
+      "minX": 250,
+      "maxX": 500,
+      "minZ": -500,
+      "maxZ": -250,
+      "buildingCount": 49
+    },
+    {
+      "id": "250_-750",
+      "file": "chunk-250_-750.json.gz",
+      "minX": 250,
+      "maxX": 500,
+      "minZ": -750,
+      "maxZ": -500,
+      "buildingCount": 30
+    },
+    {
+      "id": "250_0",
+      "file": "chunk-250_0.json.gz",
+      "minX": 250,
+      "maxX": 500,
+      "minZ": 0,
+      "maxZ": 250,
+      "buildingCount": 23
+    },
+    {
+      "id": "250_250",
+      "file": "chunk-250_250.json.gz",
+      "minX": 250,
+      "maxX": 500,
+      "minZ": 250,
+      "maxZ": 500,
+      "buildingCount": 22
+    },
+    {
+      "id": "500_-250",
+      "file": "chunk-500_-250.json.gz",
+      "minX": 500,
+      "maxX": 750,
+      "minZ": -250,
+      "maxZ": 0,
+      "buildingCount": 0
+    },
+    {
+      "id": "500_-500",
+      "file": "chunk-500_-500.json.gz",
+      "minX": 500,
+      "maxX": 750,
+      "minZ": -500,
+      "maxZ": -250,
+      "buildingCount": 4
+    },
+    {
+      "id": "500_-750",
+      "file": "chunk-500_-750.json.gz",
+      "minX": 500,
+      "maxX": 750,
+      "minZ": -750,
+      "maxZ": -500,
+      "buildingCount": 2
+    },
+    {
+      "id": "500_0",
+      "file": "chunk-500_0.json.gz",
+      "minX": 500,
+      "maxX": 750,
+      "minZ": 0,
+      "maxZ": 250,
+      "buildingCount": 16
+    },
+    {
+      "id": "500_250",
+      "file": "chunk-500_250.json.gz",
+      "minX": 500,
+      "maxX": 750,
+      "minZ": 250,
+      "maxZ": 500,
+      "buildingCount": 11
+    },
+    {
+      "id": "750_0",
+      "file": "chunk-750_0.json.gz",
+      "minX": 750,
+      "maxX": 1000,
+      "minZ": 0,
+      "maxZ": 250,
+      "buildingCount": 0
+    }
+  ],
+  "stats": {
+    "buildingsTotal": 519,
+    "buildingsBySource": {
+      "helsinki-avoindata": 478,
+      "osm": 41
+    },
+    "missingHeight": 133,
+    "heightBySource": {
+      "default": 133,
+      "floors": 370,
+      "osm-levels": 15,
+      "osm-height": 1
+    },
+    "lod1": 519,
+    "lod2": 0,
+    "roads": 2884,
+    "parks": 139,
+    "water": 8
+  },
+  "attribution": [
+    "City of Helsinki open geographic data (avoindata), CC BY 4.0",
+    "© OpenStreetMap contributors"
+  ]
+}

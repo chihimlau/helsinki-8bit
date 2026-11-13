@@ -1,0 +1,20 @@
+{
+  "kruununhaka": {
+    "areaId": "helsinki-kruununhaka",
+    "debug": "debug\nbuildings: 519\nmissingHeight (default): 133\nsources: helsinki-avoindata: 478, osm: 41\nLoD1 / LoD2: 519 / 0\nroads / parks / water: 2884 / 139 / 8\nload: 997.6 KB\nchunks: 13 / 26\ndrawCalls: 1\nFPS: 0\nSenate Squa…\nHelsinki Ca…\nGovernment …\nDay\nDusk",
+    "pins": 7,
+    "switcher": true,
+    "errors": []
+  },
+  "kluuvi": {
+    "areaId": "helsinki-kluuvi",
+    "debug": "debug\nbuildings: 303\nmissingHeight (default): 90\nsources: helsinki-avoindata: 263, osm: 40\nLoD1 / LoD2: 303 / 0\nroads / parks / water: 2579 / 190 / 8\nload: 735.4 KB\nchunks: 11 / 28\ndrawCalls: 1\nFPS: 0\nHelsinki Ce…\nAteneum Art…\nKaisaniemi …\nDay\nDusk",
+    "pins": 4,
+    "switcher": true,
+    "errors": []
+  },
+  "mobileKluuvi": {
+    "debug": "debug\nbuildings: 303\nmissingHeight (default): 90\nsources: helsinki-avoindata: 263, osm: 40\nLoD1 / LoD2: 303 / 0\nroads / parks / water: 2579 / 190 / 8\nload: 735.4 KB\nchunks: 11 / 28\ndrawCalls: 1\nFPS: 0\nHelsinki Ce…\nAteneum Art…\nKaisaniemi …\nDay\nDusk",
+    "pins": 4
+  }
+}

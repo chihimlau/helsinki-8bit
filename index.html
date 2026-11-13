@@ -1,0 +1,54 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+    <meta name="theme-color" content="#1a1f24" />
+    <link rel="manifest" href="/manifest.webmanifest" />
+    <link rel="icon" href="/icon-192.png" type="image/png" />
+    <title>Helsinki 8-bit City</title>
+    <style>
+      html, body { margin: 0; height: 100%; overflow: hidden; background: #1a1f24; }
+      #app { position: fixed; inset: 0; }
+      canvas { display: block; width: 100%; height: 100%; touch-action: none; }
+      #hud {
+        position: fixed; left: 10px; bottom: 10px; z-index: 2;
+        color: #e8eef2; font: 12px/1.4 ui-monospace, Consolas, monospace;
+        text-shadow: 0 1px 2px #000; pointer-events: none; max-width: min(92vw, 420px);
+      }
+      #debug {
+        position: fixed; top: 10px; left: 10px; z-index: 8;
+        background: rgba(0,0,0,0.82); color: #d7ffe0; padding: 10px 12px;
+        font: 12px/1.45 ui-monospace, Consolas, monospace; border-radius: 6px;
+        max-width: min(94vw, 360px); display: none;
+      }
+      #debug button {
+        pointer-events: auto; margin: 4px 4px 0 0; font: inherit;
+        background: #243038; color: #e8eef2; border: 1px solid #4a5a64; border-radius: 4px; padding: 4px 8px;
+      }
+      #dbg-cams { display: flex; flex-wrap: wrap; gap: 4px; margin-top: 4px; }
+      @media (max-width: 480px) {
+        #debug {
+          max-width: min(58vw, 220px);
+          font-size: 10px;
+          padding: 6px 8px;
+          max-height: 42vh;
+          overflow: auto;
+        }
+        #debug button { padding: 3px 6px; font-size: 10px; }
+        #landmark-list {
+          max-width: min(42vw, 150px) !important;
+          max-height: 40vh !important;
+          font-size: 11px !important;
+        }
+        #hud { font-size: 10px; max-width: 70vw; }
+      }
+    </style>
+  </head>
+  <body>
+    <div id="app"></div>
+    <div id="hud"></div>
+    <div id="debug"></div>
+    <script type="module" src="/src/main.ts"></script>
+  </body>
+</html>

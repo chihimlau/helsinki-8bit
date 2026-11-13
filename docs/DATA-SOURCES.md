@@ -19,10 +19,13 @@
 - 用途：道路、公園、水面、樹；以及 Helsinki 3D 不可用時的建築後備
 - 原始資料 cache 在本地，不重複打 API，使用清楚的 User-Agent，速率不超過每秒一次
 
-## 合併規則
+## 合併規則（M0 後現行）
 - 全部轉成 EPSG:3879，再減去 city origin 得到世界座標
-- 建築：Helsinki 3D 優先。LoD2 有屋頂就用屋頂形狀，只有 LoD1 就用平屋頂
-- 同一棟建築若 OSM 也有，用 footprint 重疊度對照，只保存 osmId，不重複畫
-- OSM 有、Helsinki 3D 沒有的建築，可能是較新的建築：用 OSM 的樓層數估高度
-- 道路、公園、水面貼在地形高度上
-- 每次運行輸出統計：各來源物件數量、缺高度數量、LoD1 / LoD2 數量、輸出大小
+- 建築：**Helsinki avoindata** `Rakennukset_alue_rekisteritiedot` 優先（官方 footprint）。平屋頂擠出；CityGML LoD2 暫無
+- 高度：`i_kerrlkm * 3.2` → OSM `height` / `building:levels * 3.2` → 預設值；統計各桶數量
+- 同一棟若 OSM 也有，用 footprint 重疊度對照，只保存 osmId，不重複畫
+- OSM 有、avoindata 沒有的建築：用 OSM footprint + 樓層／高度補上
+- 道路、公園、水面貼在地形高度上（M1 地形先平地）
+- WFS bbox（EPSG:3879）：使用 **easting,northing（x,y）**（M0 已驗證）
+- 每次運行輸出統計：各來源物件數量、缺高度數量、LoD1 / LoD2（若無則記 0）、輸出大小
+- CityGML WFS／圖幅下載若之後可用，再升為主建築來源（見 `docs/data-probe-report.md`）
