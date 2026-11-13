@@ -102,7 +102,7 @@ export function createApp(opts: CreateAppOptions) {
   );
   const specialRoot = addSpecialLandmarks(scene, opts.landmarks);
 
-  opts.hud.innerHTML = `${opts.manifest.attribution.join(' · ')} · <span id="preset-label">${preset}</span>`;
+  opts.hud.textContent = opts.manifest.attribution.join(' · ');
 
   let needsRender = true;
   const requestRender = () => {
@@ -202,8 +202,6 @@ export function createApp(opts: CreateAppOptions) {
     sun.intensity = palette.sunIntensity;
     applyPaletteToBuildingMaterial(buildingMat, palette);
     pixel.setOutline(palette.outline);
-    const label = document.getElementById('preset-label');
-    if (label) label.textContent = preset;
     const url = new URL(location.href);
     if (preset === 'day') url.searchParams.delete('preset');
     else url.searchParams.set('preset', preset);
