@@ -24,13 +24,11 @@ const H = HELSINKI_PIXEL_STYLE.palette;
 /** Day palette locked to Helsinki pixel-art reference. */
 export const PALETTES: Record<PresetName, PaletteColors> = {
   day: {
-    // Cream-tint sky / warm ground — match diorama day plate, not dark park green
-    sky: 0xe8e2d6,
-    ground: 0xb5a88f,
+    sky: H.labSky,
+    ground: H.labGround,
     park: 0x6a9458,
     water: H.water,
     road: 0x6a6a72,
-    // Quiet LoD1 backdrop — special meshes carry the yellow
     building: H.muteWall,
     roof: H.muteRoof,
     windowLit: 0xc8c0b0,
@@ -38,8 +36,8 @@ export const PALETTES: Record<PresetName, PaletteColors> = {
     outline: 0x2a2a32,
     ambient: 0xfff8ef,
     sun: 0xfff4e0,
-    sunIntensity: 1.05,
-    ambientIntensity: 0.72,
+    sunIntensity: 1.1,
+    ambientIntensity: 0.78,
   },
   dusk: {
     sky: 0x3a4568,

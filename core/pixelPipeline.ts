@@ -32,10 +32,9 @@ void main() {
   float l = dot(c.rgb, vec3(0.299, 0.587, 0.114));
   float lR = dot(texture2D(tDiffuse, vUv + vec2(uTexel.x, 0.0)).rgb, vec3(0.299, 0.587, 0.114));
   float lU = dot(texture2D(tDiffuse, vUv + vec2(0.0, uTexel.y)).rgb, vec3(0.299, 0.587, 0.114));
-  float edge = step(0.08, abs(l - lR)) + step(0.08, abs(l - lU));
-  vec3 col = mix(c.rgb, uOutline, clamp(edge, 0.0, 1.0) * 0.85);
-  // hard quantize — fewer bands, less muddy dither look
-  col = floor(col * 12.0 + 0.5) / 12.0;
+  float edge = step(0.1, abs(l - lR)) + step(0.1, abs(l - lU));
+  vec3 col = mix(c.rgb, uOutline, clamp(edge, 0.0, 1.0) * 0.75);
+  col = floor(col * 10.0 + 0.5) / 10.0;
   gl_FragColor = vec4(col, 1.0);
 }
 `;

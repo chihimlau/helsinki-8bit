@@ -70,6 +70,8 @@ async function boot() {
   const params = new URLSearchParams(location.search);
   const debug = params.get('debug') === '1';
   const preset = resolvePreset(params.get('preset'));
+  const labRaw = params.get('lab');
+  const labMode = labRaw === 'senate-diorama' ? ('senate-diorama' as const) : null;
 
   try {
     const t0 = performance.now();
@@ -119,11 +121,15 @@ async function boot() {
       landmarks,
       debug,
       preset,
-      internalWidth: configRes.render?.internalWidth ?? 480,
-      internalHeight: configRes.render?.internalHeight ?? 270,
+      labMode,
+      // Lab uses its own RT size inside createApp when labMode is set
+      internalWidth: labMode ? undefined : (configRes.render?.internalWidth ?? 480),
+      internalHeight: labMode ? undefined : (configRes.render?.internalHeight ?? 270),
     });
 
-    console.info(`M5 boot ${areaId} ${Math.round(performance.now() - t0)} ms`);
+    console.info(
+      `boot ${areaId}${labMode ? ` lab=${labMode}` : ''} ${Math.round(performance.now() - t0)} ms`,
+    );
 
     if ('serviceWorker' in navigator) {
       navigator.serviceWorker.register('/sw.js').catch(() => undefined);

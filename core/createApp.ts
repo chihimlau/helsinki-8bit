@@ -21,8 +21,11 @@ import {
 import { PALETTES, resolvePreset, type PresetName } from './palette';
 import { pickBuilding } from './picking';
 import { createPixelPipeline } from './pixelPipeline';
+import { HELSINKI_PIXEL_STYLE } from './helsinkiPixelStyle';
 import { addSpecialLandmarks, dioramaMuteCenters } from './specialBuildings';
 import type { AreaManifest, LandmarkWorld } from './types';
+
+export type LabMode = 'senate-diorama' | null;
 
 export type CreateAppOptions = {
   container: HTMLElement;
@@ -36,14 +39,22 @@ export type CreateAppOptions = {
   preset?: PresetName;
   internalWidth?: number;
   internalHeight?: number;
+  /** Art lab: Square island only, cream plate, locked hero camera. */
+  labMode?: LabMode;
 };
 
 export function createApp(opts: CreateAppOptions) {
+  const labMode = opts.labMode ?? null;
+  const lab = labMode === 'senate-diorama';
   let preset: PresetName = opts.preset ?? 'day';
   let palette = PALETTES[preset];
 
-  const internalW = opts.internalWidth ?? 480;
-  const internalH = opts.internalHeight ?? 270;
+  const internalW =
+    opts.internalWidth ??
+    (lab ? HELSINKI_PIXEL_STYLE.labInternalWidth : 480);
+  const internalH =
+    opts.internalHeight ??
+    (lab ? HELSINKI_PIXEL_STYLE.labInternalHeight : 270);
   const rtAspect = internalW / internalH;
 
   const scene = new Scene();
@@ -101,9 +112,33 @@ export function createApp(opts: CreateAppOptions) {
       .filter((l) => l.special && l.buildingId)
       .map((l) => l.buildingId as string),
   );
-  const specialRoot = addSpecialLandmarks(scene, opts.landmarks);
+  const specialRoot = addSpecialLandmarks(scene, opts.landmarks, { labMode: lab });
 
-  opts.hud.textContent = opts.manifest.attribution.join(' · ');
+  opts.hud.textContent = lab
+    ? `LAB ${labMode} · ${opts.manifest.attribution.join(' · ')}`
+    : opts.manifest.attribution.join(' · ');
+
+  if (lab) {
+    // Cream diorama plate — hide the huge city ground under a local island
+    ground.visible = false;
+    const square = opts.landmarks.find((l) => l.id === 'hel-senate-square');
+    const cathedral = opts.landmarks.find((l) => l.special === 'cathedral');
+    const cx = square && cathedral ? (square.x + cathedral.x) / 2 : square?.x ?? 0;
+    const cz = square && cathedral ? (square.z + cathedral.z) / 2 : square?.z ?? 0;
+    const islandMat = createLambert(HELSINKI_PIXEL_STYLE.palette.labGround);
+    const island = new Mesh(new PlaneGeometry(280, 280), islandMat);
+    island.rotation.x = -Math.PI / 2;
+    island.position.set(cx, -0.05, cz);
+    scene.add(island);
+    // Thin water rim (visual frame only — does not alter coastline data)
+    const waterRim = new Mesh(
+      new PlaneGeometry(320, 320),
+      createLambert(HELSINKI_PIXEL_STYLE.palette.water),
+    );
+    waterRim.rotation.x = -Math.PI / 2;
+    waterRim.position.set(cx, -0.2, cz);
+    scene.add(waterRim);
+  }
 
   let needsRender = true;
   const requestRender = () => {
@@ -126,7 +161,7 @@ export function createApp(opts: CreateAppOptions) {
       road: roadMat,
     },
     skipBuildingIds,
-    muteNear: dioramaMuteCenters(opts.landmarks),
+    muteNear: lab ? [] : dioramaMuteCenters(opts.landmarks),
     initialBytes: opts.initialBytes,
     onChange: () => {
       debug.setLoad(
@@ -168,12 +203,24 @@ export function createApp(opts: CreateAppOptions) {
   });
 
   syncChunks = () => {
+    if (lab) return; // diorama island: no LoD1 chunks
     const t = controls.getTarget();
     chunks.sync(t.x, t.z, Math.max(frustum * 1.15, 380));
   };
 
+  const uiLandmarks = lab
+    ? opts.landmarks.filter((l) =>
+        [
+          'hel-senate-square',
+          'hel-helsinki-cathedral',
+          'hel-government-palace',
+          'hel-university-main-building',
+        ].includes(l.id),
+      )
+    : opts.landmarks;
+
   landmarksUi = createLandmarksUi({
-    landmarks: opts.landmarks,
+    landmarks: uiLandmarks,
     camera,
     canvas: renderer.domElement,
     onJump: (lm) => {
@@ -267,18 +314,18 @@ export function createApp(opts: CreateAppOptions) {
   };
   tick();
 
-  // 2A art: hero frame Square → Cathedral (day diorama composition)
+  // Hero frame: Square → Cathedral (lab matches diorama reference composition)
   const cathedral = opts.landmarks.find((l) => l.special === 'cathedral');
   const square = opts.landmarks.find((l) => l.id === 'hel-senate-square');
   if (cathedral && square) {
     controls.setTarget(
-      cathedral.x * 0.55 + square.x * 0.45,
-      cathedral.z * 0.4 + square.z * 0.6,
+      cathedral.x * 0.58 + square.x * 0.42,
+      cathedral.z * 0.35 + square.z * 0.65,
     );
-    controls.setZoom(240);
+    controls.setZoom(lab ? 210 : 240);
   } else if (cathedral) {
     controls.setTarget(cathedral.x, cathedral.z + 40);
-    controls.setZoom(260);
+    controls.setZoom(lab ? 230 : 260);
   } else if (opts.landmarks[0]) {
     controls.setTarget(opts.landmarks[0].x, opts.landmarks[0].z);
     controls.setZoom(300);
@@ -288,6 +335,10 @@ export function createApp(opts: CreateAppOptions) {
   }
   syncChunks();
   applyPreset(preset);
+  if (lab) {
+    scene.background = new Color(HELSINKI_PIXEL_STYLE.palette.labSky);
+    applyPreset('day');
+  }
   landmarksUi.update();
 
   return {

@@ -26,6 +26,7 @@
 - **第二輪**：先 **2A = Cathedral + Senate Square 示範島**；過關再 **2B 擴全圖**。仍 3D→像素降解，不用圖像生成／大型貼圖
 - **風格規格**：`core/helsinkiPixelStyle.ts`（色盤／圓頂／廣場／圓樹配方）；地理照舊、只改長相
 - **Baseline**：等 2A 你認可以後才討論定版；全圖美術以 2B 為準
+- **M6-lab 旁路**：分支 `m6-lab-diorama` + `?lab=senate-diorama` 浮島驗收（奶油底、鎖 hero、不載 LoD1）。目標仍是把同一美術合回全圖；浮島裁切不作永久產品形態
 
 ## M5 已決定
 - 第二區 `helsinki-kluuvi`：同 city origin（Senate Square），bbox 與 kruununhaka 西緣重疊以便拼接驗證

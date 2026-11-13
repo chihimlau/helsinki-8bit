@@ -55,6 +55,11 @@
 
 成功標準（2A）：固定鏡頭一眼認得出 **Cathedral + Senate Square**，質感接近 Slynyrd cuboid（不是灰盒子＋pin）。
 
+#### M6-lab（旁路驗收）
+- 分支 `m6-lab-diorama`；入口 `?lab=senate-diorama&preset=day&debug=1`
+- 浮島＋奶油底＋只留 Square／Cathedral／側翼；跟參考 diorama 並排驗收
+- 過關後把幾何／材質／色盤合回 `m6-look` 全圖（Lab 旗標可留作 debug）
+
 #### 2B — 擴到全圖（2A 過關後）
 地面草／路／水、一般建築三面明度、樹叢、港／Market Square、其他地標 — 複用 2A 的材質語言。
 
