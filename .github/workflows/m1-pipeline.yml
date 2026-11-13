@@ -1,6 +1,15 @@
 name: M1 pipeline fetch
 on:
   workflow_dispatch:
+  push:
+    branches: [m1]
+    paths:
+      - 'pipeline/**'
+      - 'areas/*/area.config.json'
+      - 'cities/**/city.config.json'
+      - '.github/workflows/m1-pipeline.yml'
+      - 'package.json'
+      - 'package-lock.json'
 permissions:
   contents: write
 jobs:
