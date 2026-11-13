@@ -31,6 +31,11 @@ async function gunzipToText(buf: ArrayBuffer): Promise<string> {
   return await new Response(stream).text();
 }
 
+function looksLikeGzip(buf: ArrayBuffer): boolean {
+  const u = new Uint8Array(buf);
+  return u.length >= 2 && u[0] === 0x1f && u[1] === 0x8b;
+}
+
 export async function fetchChunk(
   dataBaseUrl: string,
   file: string,
@@ -39,7 +44,9 @@ export async function fetchChunk(
   if (!res.ok) throw new Error(`chunk ${file} HTTP ${res.status}`);
   const buf = await res.arrayBuffer();
   const bytes = buf.byteLength;
-  const text = file.endsWith('.gz') ? await gunzipToText(buf) : new TextDecoder().decode(buf);
+  // Vite/CDN may set Content-Encoding: gzip for *.json.gz and auto-decode the body.
+  // Only run DecompressionStream when the payload still has gzip magic bytes.
+  const text = looksLikeGzip(buf) ? await gunzipToText(buf) : new TextDecoder().decode(buf);
   return {
     chunk: JSON.parse(text) as ChunkJson,
     bytes,
