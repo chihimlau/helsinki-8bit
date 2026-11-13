@@ -1,6 +1,6 @@
-M0 報告已確認，來源決定：（請在這裡寫你的決定，例如「Helsinki 3D 做建築，OSM 做其他」或「暫時只用 OSM」）
+M0 報告已確認，來源決定：建築用 Helsinki avoindata WFS（Rakennukset_alue_rekisteritiedot + 樓層估高）；道路／公園／水面／樹用 OSM；地形 M1 先平地；CityGML 暫不作為主來源（見 docs/DECISIONS.md）。
 
-現在執行 Milestone 1（見 docs/MILESTONES.md）。
+現在執行 Milestone 1（見 docs/MILESTONES.md）。M1 不做像素風（像素風在 M2）；但輸出必須是可擠出的簡單建築，以便 M2 接低解像度 RT／色盤／窗戶 shader。
 
 要求：
 1. 建立專案結構（Vite + TypeScript + Three.js + vitest），pipeline 用 source adapter 分開 Helsinki 3D 和 OSM

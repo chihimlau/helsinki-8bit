@@ -27,8 +27,8 @@
     "dusk"
   ],
   "dataSources": {
-    "buildings": "helsinki3d-citygml",
-    "terrain": "helsinki3d-citygml",
+    "buildings": "helsinki-avoindata-wfs",
+    "terrain": "flat",
     "roads": "osm",
     "parks": "osm",
     "water": "osm",

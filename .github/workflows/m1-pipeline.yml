@@ -1,0 +1,42 @@
+name: M1 pipeline fetch
+on:
+  workflow_dispatch:
+permissions:
+  contents: write
+jobs:
+  fetch-and-build-data:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ github.ref }}
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+      - run: npm ci
+      - name: Clear raw pipeline cache (force fresh download)
+        run: rm -rf areas/helsinki-kruununhaka/raw/pipeline
+      - run: npm run pipeline:fetch -- --area=helsinki-kruununhaka
+      - run: npm test
+      - run: npm run build
+      - name: Commit processed data
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add areas/helsinki-kruununhaka/data cities/helsinki/city.config.json
+          git status
+          if git diff --staged --quiet; then
+            echo "No data changes"
+          else
+            git commit -m "data: helsinki-kruununhaka avoindata+OSM chunks (M1 pipeline)"
+            git push
+          fi
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: m1-data-and-dist
+          path: |
+            areas/helsinki-kruununhaka/data/
+            dist/
+            cities/helsinki/city.config.json

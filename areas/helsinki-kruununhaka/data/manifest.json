@@ -1,0 +1,74 @@
+{
+  "schemaVersion": 1,
+  "areaId": "helsinki-kruununhaka",
+  "cityId": "helsinki",
+  "origin": {
+    "x": 25497363.102,
+    "y": 6673002.961
+  },
+  "chunkSizeMeters": 250,
+  "bounds": {
+    "minX": -250,
+    "maxX": 250,
+    "minZ": -250,
+    "maxZ": 250
+  },
+  "chunks": [
+    {
+      "id": "-250_-250",
+      "file": "chunk--250_-250.json",
+      "minX": -250,
+      "maxX": 0,
+      "minZ": -250,
+      "maxZ": 0,
+      "buildingCount": 10
+    },
+    {
+      "id": "-250_0",
+      "file": "chunk--250_0.json",
+      "minX": -250,
+      "maxX": 0,
+      "minZ": 0,
+      "maxZ": 250,
+      "buildingCount": 7
+    },
+    {
+      "id": "0_-250",
+      "file": "chunk-0_-250.json",
+      "minX": 0,
+      "maxX": 250,
+      "minZ": -250,
+      "maxZ": 0,
+      "buildingCount": 14
+    },
+    {
+      "id": "0_0",
+      "file": "chunk-0_0.json",
+      "minX": 0,
+      "maxX": 250,
+      "minZ": 0,
+      "maxZ": 250,
+      "buildingCount": 8
+    }
+  ],
+  "stats": {
+    "buildingsTotal": 39,
+    "buildingsBySource": {
+      "helsinki-avoindata": 39
+    },
+    "missingHeight": 3,
+    "heightBySource": {
+      "floors": 36,
+      "default": 3
+    },
+    "lod1": 39,
+    "lod2": 0,
+    "roads": 0,
+    "parks": 0,
+    "water": 0
+  },
+  "attribution": [
+    "City of Helsinki open geographic data (avoindata), CC BY 4.0",
+    "© OpenStreetMap contributors"
+  ]
+}
