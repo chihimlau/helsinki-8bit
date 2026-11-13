@@ -267,7 +267,9 @@ export function createApp(opts: CreateAppOptions) {
   };
   tick();
 
-  controls.setTarget(0, 0);
+  // Start near first landmark, else origin (shared city origin may be outside this area)
+  const start = opts.landmarks[0];
+  controls.setTarget(start?.x ?? 0, start?.z ?? 0);
   controls.setZoom(320);
   syncChunks();
   applyPreset(preset);
