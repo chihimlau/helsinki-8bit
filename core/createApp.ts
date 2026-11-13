@@ -22,7 +22,7 @@ export function createApp(opts: {
   debug: boolean;
 }) {
   const scene = new Scene();
-  scene.background = new Color(0x87a0b0);
+  scene.background = new Color(0x6a8494);
 
   const renderer = new WebGLRenderer({ antialias: false, powerPreference: 'high-performance' });
   renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
@@ -57,7 +57,7 @@ export function createApp(opts: {
   scene.add(ground);
 
   const parkMat = new MeshLambertMaterial({ color: 0x4f7a45 });
-  const waterMat = new MeshLambertMaterial({ color: 0x3d6f9c });
+  const waterMat = new MeshLambertMaterial({ color: 0x2f6f9e });
   const roadMat = new MeshLambertMaterial({ color: 0x5a5a5a });
   const buildingMat = new MeshLambertMaterial({ color: 0xd8d2c4 });
 
@@ -98,8 +98,8 @@ export function createApp(opts: {
   const debug = createDebugPanel(opts.debugEl, opts.area, opts.debug);
   const cams = [
     { label: 'Square', x: 0, z: 0, zoom: 280 },
-    { label: 'Cathedral', x: -20, z: -40, zoom: 220 },
-    { label: 'Harbour', x: 40, z: 180, zoom: 380 },
+    { label: 'Cathedral', x: -15, z: -55, zoom: 200 },
+    { label: 'Harbour', x: 30, z: 220, zoom: 420 },
   ];
   debug.mountCameras(
     cams.map((c) => ({

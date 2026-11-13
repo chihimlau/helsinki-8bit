@@ -193,6 +193,10 @@ export async function fetchOsmLayers(
   way["waterway"="riverbank"](${south},${west},${north},${east});
   way["water"](${south},${west},${north},${east});
   way["natural"="bay"](${south},${west},${north},${east});
+  way["natural"="coastline"](${south},${west},${north},${east});
+  relation["natural"="coastline"](${south},${west},${north},${east});
+  way["place"="sea"](${south},${west},${north},${east});
+  relation["place"="sea"](${south},${west},${north},${east});
   way["leisure"="park"](${south},${west},${north},${east});
   way["landuse"="grass"](${south},${west},${north},${east});
   way["landuse"="recreation_ground"](${south},${west},${north},${east});

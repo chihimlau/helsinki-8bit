@@ -6,6 +6,7 @@ import { fetchAvoindataBuildings, parseAvoindataGeoJson } from './sources/helsin
 import { fetchOsmLayers, parseOsmPayload } from './sources/osm';
 import { mergeAreaData } from './merge';
 import { writeChunkedArea } from './build/chunks';
+import { buildHarbourWaterFill, waterAreaApprox } from './harbourWater';
 
 const root = join(dirname(fileURLToPath(import.meta.url)), '..');
 const doFetch = process.argv.includes('--fetch');
@@ -64,12 +65,18 @@ async function main() {
     osm = parseOsmPayload(JSON.parse(readFileSync(osmCache, 'utf8')), origin);
   }
 
+  let water = [...osm.water];
+  // South Harbour rarely comes through as large OSM water polygons; ensure a sea fill.
+  if (waterAreaApprox(water) < 50_000) {
+    water = [...water, buildHarbourWaterFill(area.bbox, origin)];
+  }
+
   const merged = mergeAreaData({
     avoBuildings,
     osmBuildings: osm.buildings,
     roads: osm.roads,
     parks: osm.parks,
-    water: osm.water,
+    water,
   });
 
   const manifest = writeChunkedArea({
