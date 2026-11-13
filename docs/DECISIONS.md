@@ -23,8 +23,8 @@
 ## M6-look（baseline 前美術）
 - **第一輪**：靠近 Isometric Warsaw；Cathedral／Square／Station special mesh；黃 `i` pin；窗戶／道路／色盤 — **使用者不接受（細節不足）**
 - **美術參考鎖定**：Warsaw 截圖 + [Slynyrd Pixelblog 41](https://www.slynyrd.com/blog/2022/11/28/pixelblog-41-isometric-pixel-art)（2:1 線、cuboid、tile 頂／側面分色、草／土／水／樹由簡到繁）
-- **第二輪（下一輪）**：地面 tile 質感（草／石／水 dither）、樹叢、建築三面明度＋簷口、地標再加碼；仍 3D→像素降解（非手繪 2D tile atlas），不用圖像生成／大型貼圖
-- **Baseline**：等第二輪驗收通過才定；在此之前不宣告 MVP 美術完成
+- **第二輪**：先 **2A = Cathedral + Senate Square 示範島**（Slynyrd cuboid 質感）；過關再 **2B 擴全圖**。仍 3D→像素降解，不用圖像生成／大型貼圖
+- **Baseline**：等 2A（至少）你認可以後才討論定版；全圖美術以 2B 為準
 
 ## M5 已決定
 - 第二區 `helsinki-kluuvi`：同 city origin（Senate Square），bbox 與 kruununhaka 西緣重疊以便拼接驗證

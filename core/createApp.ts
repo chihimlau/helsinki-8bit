@@ -265,17 +265,17 @@ export function createApp(opts: CreateAppOptions) {
   };
   tick();
 
-  // Frame hero landmark (Cathedral / square) so Helsinki reads immediately
-  const hero =
-    opts.landmarks.find((l) => l.special === 'cathedral') ??
-    opts.landmarks.find((l) => l.special === 'square') ??
-    opts.landmarks.find((l) => l.special === 'station') ??
-    opts.landmarks[0];
-  if (hero?.special === 'cathedral') {
-    controls.setTarget(hero.x, hero.z + 45);
-    controls.setZoom(300);
-  } else if (hero) {
-    controls.setTarget(hero.x, hero.z);
+  // 2A: frame Senate Square looking toward Cathedral (shared composition)
+  const cathedral = opts.landmarks.find((l) => l.special === 'cathedral');
+  const square = opts.landmarks.find((l) => l.id === 'hel-senate-square');
+  if (cathedral && square) {
+    controls.setTarget((cathedral.x + square.x) / 2, (cathedral.z + square.z) / 2);
+    controls.setZoom(270);
+  } else if (cathedral) {
+    controls.setTarget(cathedral.x, cathedral.z + 40);
+    controls.setZoom(290);
+  } else if (opts.landmarks[0]) {
+    controls.setTarget(opts.landmarks[0].x, opts.landmarks[0].z);
     controls.setZoom(300);
   } else {
     controls.setTarget(0, 0);
