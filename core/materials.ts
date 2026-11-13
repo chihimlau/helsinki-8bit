@@ -70,7 +70,7 @@ export function createBuildingMaterial(p: PaletteColors): ShaderMaterial {
       uRoof: { value: new Color(p.roof) },
       uWindowLit: { value: new Color(p.windowLit) },
       uWindowDark: { value: new Color(p.windowDark) },
-      uSunDir: { value: new Vector3(0.55, 0.75, 0.35).normalize() },
+      uSunDir: { value: new Vector3(-0.55, 0.75, -0.35).normalize() },
       uSunIntensity: { value: p.sunIntensity },
       uAmbientIntensity: { value: p.ambientIntensity },
       uAmbient: { value: new Color(p.ambient) },

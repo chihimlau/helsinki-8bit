@@ -1,22 +1,22 @@
 import { Color, ShaderMaterial, Vector3 } from 'three';
+import { HELSINKI_PIXEL_STYLE } from './helsinkiPixelStyle';
 
-/**
- * Slynyrd-style cuboid shading: distinct top / lit side / shade side + fine dither.
- * Used for landmark hero meshes (Cathedral, Senate Square) in M6-look 2A.
- */
+const sun = HELSINKI_PIXEL_STYLE.lighting.sunDir;
+
+/** Discrete top / lit / shade cuboid shading (no smooth PBR gradients). */
 export function createIsoCuboidMaterial(opts: {
   top: number;
   sideLit: number;
   sideShade: number;
   dither?: number;
 }): ShaderMaterial {
-  const dither = opts.dither ?? 0.08;
+  const dither = opts.dither ?? 0.06;
   return new ShaderMaterial({
     uniforms: {
       uTop: { value: new Color(opts.top) },
       uSideLit: { value: new Color(opts.sideLit) },
       uSideShade: { value: new Color(opts.sideShade) },
-      uSunDir: { value: new Vector3(0.55, 0.72, 0.4).normalize() },
+      uSunDir: { value: new Vector3(sun.x, sun.y, sun.z).normalize() },
       uDither: { value: dither },
     },
     vertexShader: /* glsl */ `
@@ -39,18 +39,15 @@ varying vec3 vWorldPos;
 varying vec3 vNormalW;
 void main() {
   vec3 n = normalize(vNormalW);
-  float up = n.y;
   vec3 base;
-  if (up > 0.55) {
+  if (n.y > 0.55) {
     base = uTop;
   } else {
-    float lit = max(dot(n, normalize(uSunDir)), 0.0);
+    float lit = step(0.45, max(dot(n, normalize(uSunDir)), 0.0));
     base = mix(uSideShade, uSideLit, lit);
   }
-  // Checker dither (tile-art feel at low RT)
-  float d = step(0.5, fract(vWorldPos.x * 0.55 + vWorldPos.z * 0.55 + vWorldPos.y * 0.35));
+  float d = step(0.5, fract(vWorldPos.x * 0.6 + vWorldPos.z * 0.6 + vWorldPos.y * 0.4));
   base = mix(base, base * (1.0 - uDither), d);
-  // Soft quantize
   base = floor(base * 12.0 + 0.5) / 12.0;
   gl_FragColor = vec4(base, 1.0);
 }
@@ -58,18 +55,16 @@ void main() {
   });
 }
 
-/** Ground / plaza plate with stone dither like Slynyrd dirt-cobble tops. */
-export function createIsoPlazaMaterial(opts: {
-  a: number;
-  b: number;
-  shade: number;
-}): ShaderMaterial {
+/** Plaza paving with A/B/highlight/shadow distribution. */
+export function createIsoPlazaMaterial(): ShaderMaterial {
+  const p = HELSINKI_PIXEL_STYLE.palette;
   return new ShaderMaterial({
     uniforms: {
-      uA: { value: new Color(opts.a) },
-      uB: { value: new Color(opts.b) },
-      uShade: { value: new Color(opts.shade) },
-      uSunDir: { value: new Vector3(0.55, 0.72, 0.4).normalize() },
+      uA: { value: new Color(p.plazaA) },
+      uB: { value: new Color(p.plazaB) },
+      uHi: { value: new Color(p.plazaHighlight) },
+      uSh: { value: new Color(p.plazaShade) },
+      uSunDir: { value: new Vector3(sun.x, sun.y, sun.z).normalize() },
     },
     vertexShader: /* glsl */ `
 varying vec3 vWorldPos;
@@ -84,17 +79,27 @@ void main() {
     fragmentShader: /* glsl */ `
 uniform vec3 uA;
 uniform vec3 uB;
-uniform vec3 uShade;
+uniform vec3 uHi;
+uniform vec3 uSh;
 uniform vec3 uSunDir;
 varying vec3 vWorldPos;
 varying vec3 vNormalW;
 void main() {
   vec3 n = normalize(vNormalW);
-  float cell = step(0.5, fract(vWorldPos.x * 0.22)) * step(0.5, fract(vWorldPos.z * 0.22));
-  float fine = step(0.5, fract(vWorldPos.x * 0.9 + vWorldPos.z * 0.9));
-  vec3 top = mix(uA, uB, cell * 0.65 + fine * 0.35);
-  float lit = max(dot(n, normalize(uSunDir)), 0.0);
-  vec3 col = n.y > 0.5 ? top : mix(uShade, top, lit * 0.5);
+  float gx = floor(vWorldPos.x * 0.28);
+  float gz = floor(vWorldPos.z * 0.28);
+  float checker = mod(gx + gz, 2.0);
+  float r = fract(sin(gx * 12.9898 + gz * 78.233) * 43758.5453);
+  vec3 top = mix(uA, uB, checker);
+  if (r > 0.85) top = uHi;
+  if (r < 0.08) top = uSh;
+  // Grout lines
+  float fx = fract(vWorldPos.x * 0.28);
+  float fz = fract(vWorldPos.z * 0.28);
+  float grout = step(fx, 0.06) + step(fz, 0.06);
+  top = mix(top, uSh, clamp(grout, 0.0, 1.0) * 0.45);
+  float lit = step(0.4, max(dot(n, normalize(uSunDir)), 0.0));
+  vec3 col = n.y > 0.5 ? top : mix(uSh, top, 0.35 + lit * 0.4);
   col = floor(col * 12.0 + 0.5) / 12.0;
   gl_FragColor = vec4(col, 1.0);
 }

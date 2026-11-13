@@ -4,7 +4,7 @@ import path from 'node:path';
 
 const OUT = path.resolve('screenshots/m6-look');
 fs.mkdirSync(OUT, { recursive: true });
-const BASE = 'http://127.0.0.1:4177';
+const BASE = process.env.M6_BASE || 'http://127.0.0.1:4178';
 
 async function waitReady(page) {
   await page.waitForSelector('#debug', { timeout: 25000 });

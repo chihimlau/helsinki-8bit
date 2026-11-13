@@ -75,7 +75,8 @@ export function createApp(opts: CreateAppOptions) {
   const ambient = new AmbientLight(palette.ambient, palette.ambientIntensity);
   scene.add(ambient);
   const sun = new DirectionalLight(palette.sun, palette.sunIntensity);
-  sun.position.set(120, 160, 60);
+  // Upper-left light (Helsinki pixel style)
+  sun.position.set(-90, 140, -70);
   scene.add(sun);
 
   const b = opts.manifest.bounds;

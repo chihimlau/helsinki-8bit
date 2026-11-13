@@ -1,3 +1,5 @@
+import { HELSINKI_PIXEL_STYLE } from './helsinkiPixelStyle';
+
 export type PaletteColors = {
   sky: number;
   ground: number;
@@ -17,38 +19,40 @@ export type PaletteColors = {
 
 export type PresetName = 'day' | 'dusk';
 
-/** Day / dusk sets tuned toward Warsaw-like contrast (readable roofs + parks). */
+const H = HELSINKI_PIXEL_STYLE.palette;
+
+/** Day palette locked to Helsinki pixel-art reference. */
 export const PALETTES: Record<PresetName, PaletteColors> = {
   day: {
-    sky: 0xa8d4f0,
-    ground: 0x6e9a5c,
-    park: 0x4a8a40,
-    water: 0x3a85c0,
-    road: 0x55555a,
-    building: 0xefe8dc,
-    roof: 0x8a6548,
-    windowLit: 0xe8f4ff,
-    windowDark: 0x3a4a58,
-    outline: 0x1a1a1a,
-    ambient: 0xfff8f0,
-    sun: 0xfff0d8,
-    sunIntensity: 1.15,
-    ambientIntensity: 0.62,
+    sky: 0xc8d8e8,
+    ground: H.grass,
+    park: H.grassHighlight,
+    water: H.water,
+    road: 0x4a4a52,
+    building: H.buildingYellow,
+    roof: H.roof,
+    windowLit: H.windowFrame,
+    windowDark: H.windowGlass,
+    outline: 0x2a2a32,
+    ambient: 0xfff5e8,
+    sun: 0xfff0d0,
+    sunIntensity: 1.05,
+    ambientIntensity: 0.55,
   },
   dusk: {
     sky: 0x3a4568,
-    ground: 0x3a4e3c,
-    park: 0x2a4530,
-    water: 0x1a3858,
-    road: 0x26262a,
-    building: 0xc4a890,
-    roof: 0x523828,
+    ground: H.grassShade,
+    park: H.grass,
+    water: H.waterShade,
+    road: 0x2e2e34,
+    building: H.buildingShade,
+    roof: H.roofShade,
     windowLit: 0xffc86b,
     windowDark: 0x241820,
     outline: 0x08080e,
     ambient: 0xffa878,
     sun: 0xff7a50,
-    sunIntensity: 0.78,
+    sunIntensity: 0.75,
     ambientIntensity: 0.32,
   },
 };
