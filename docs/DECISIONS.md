@@ -20,6 +20,12 @@
 - LoD2 屋頂簡化程度（若之後取得 CityGML）
 - CityGML 圖幅／`kartta.hel.fi/3d` 區域下載是否可恢復為建築升級來源（不阻塞 MVP）
 
+## M5 已決定
+- 第二區 `helsinki-kluuvi`：同 city origin（Senate Square），bbox 與 kruununhaka 西緣重疊以便拼接驗證
+- 區域切換：`areas/catalog.json` + `?area=` + UI 在 `src/main.ts`（不進 core）
+- `harbourWaterFill` 寫在 area.config（只有 kruununhaka true）；Kluuvi 不加假海面
+- 資料仍用 Actions `pipeline:fetch`（本機公司網不可靠）
+
 ## M4 已決定
 - 點擊：tap vs drag（移動 >8px 不當點）；建築 footprint 射線挑選 + 橙色 EdgesGeometry 高亮
 - 地標：HTML pin + 清單 + 資訊卡；座標在 `src/main.ts` 轉世界米（core 無 lat/lon）

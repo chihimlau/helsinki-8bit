@@ -19,6 +19,11 @@ function copyAreaData(destRoot: string) {
       cpSync(dataDir, join(destArea, 'data'), { recursive: true });
     }
   }
+  const catalog = join(areasRoot, 'catalog.json');
+  if (existsSync(catalog)) {
+    mkdirSync(join(destRoot, 'areas'), { recursive: true });
+    cpSync(catalog, join(destRoot, 'areas', 'catalog.json'));
+  }
 }
 
 function areaDataPlugin(): Plugin {

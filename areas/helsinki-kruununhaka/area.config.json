@@ -11,6 +11,7 @@
     "note": "約數，約 1km x 1km。範圍用 bbox，不是官方行政區邊界，pipeline 可微調"
   },
   "chunkSizeMeters": 250,
+  "harbourWaterFill": true,
   "render": {
     "internalWidth": 480,
     "internalHeight": 270,

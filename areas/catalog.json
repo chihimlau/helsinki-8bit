@@ -1,0 +1,15 @@
+{
+  "defaultAreaId": "helsinki-kruununhaka",
+  "areas": [
+    {
+      "id": "helsinki-kruununhaka",
+      "name": "Kruununhaka",
+      "city": "helsinki"
+    },
+    {
+      "id": "helsinki-kluuvi",
+      "name": "Kluuvi",
+      "city": "helsinki"
+    }
+  ]
+}

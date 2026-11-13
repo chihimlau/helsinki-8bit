@@ -211,11 +211,16 @@ export function createApp(opts: CreateAppOptions) {
     requestRender();
   };
 
-  const cams = [
-    { label: 'Square', x: 0, z: 0, zoom: 280 },
-    { label: 'Cathedral', x: -16, z: -56, zoom: 200 },
-    { label: 'Harbour', x: 30, z: 220, zoom: 420 },
-  ];
+  // Debug bookmarks from landmarks (no hard-coded place names/coords in core)
+  const cams = opts.landmarks.slice(0, 3).map((lm) => ({
+    label: lm.name.length > 12 ? `${lm.name.slice(0, 11)}…` : lm.name,
+    x: lm.x,
+    z: lm.z,
+    zoom: 260,
+  }));
+  if (cams.length === 0) {
+    cams.push({ label: 'Origin', x: 0, z: 0, zoom: 320 });
+  }
   debug.mountCameras([
     ...cams.map((c) => ({
       label: c.label,

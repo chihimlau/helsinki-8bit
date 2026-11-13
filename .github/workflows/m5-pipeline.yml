@@ -1,0 +1,52 @@
+name: M5 pipeline fetch (kluuvi)
+on:
+  workflow_dispatch:
+  push:
+    branches: [m5]
+    paths:
+      - 'pipeline/**'
+      - 'areas/helsinki-kluuvi/**'
+      - 'areas/*/area.config.json'
+      - 'cities/**/city.config.json'
+      - '.github/workflows/m5-pipeline.yml'
+      - 'package.json'
+      - 'package-lock.json'
+permissions:
+  contents: write
+jobs:
+  fetch-kluuvi:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ github.ref }}
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+      - run: npm ci
+      - name: Clear kluuvi raw cache
+        run: rm -rf areas/helsinki-kluuvi/raw/pipeline
+      - run: npx tsx pipeline/cli.ts --fetch --area=helsinki-kluuvi
+      - run: npm test
+      - run: npm run build
+      - name: Commit processed kluuvi data
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add areas/helsinki-kluuvi/data cities/helsinki/city.config.json
+          git status
+          if git diff --staged --quiet; then
+            echo "No data changes"
+          else
+            git commit -m "data: helsinki-kluuvi avoindata+OSM chunks (M5 pipeline)"
+            git push
+          fi
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: m5-kluuvi-data-and-dist
+          path: |
+            areas/helsinki-kluuvi/data/
+            dist/
+            cities/helsinki/city.config.json

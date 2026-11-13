@@ -19,6 +19,7 @@ async function main() {
     city: string;
     bbox: { south: number; north: number; west: number; east: number };
     chunkSizeMeters: number;
+    harbourWaterFill?: boolean;
   };
   const cityPath = join(root, 'cities', area.city, 'city.config.json');
   const city = JSON.parse(readFileSync(cityPath, 'utf8')) as {
@@ -66,8 +67,8 @@ async function main() {
   }
 
   let water = [...osm.water];
-  // South Harbour rarely comes through as large OSM water polygons; ensure a sea fill.
-  if (waterAreaApprox(water) < 50_000) {
+  // South Harbour fill only when the area opts in (Kruununhaka). Kluuvi is inland.
+  if (area.harbourWaterFill && waterAreaApprox(water) < 50_000) {
     water = [...water, buildHarbourWaterFill(area.bbox, origin)];
   }
 
