@@ -20,6 +20,29 @@ export type ChunkManager = {
   dispose: () => void;
 };
 
+function footprintCentroid(fp: [number, number][]): { x: number; z: number } {
+  let sx = 0;
+  let sz = 0;
+  const n = Math.max(fp.length, 1);
+  for (const [x, z] of fp) {
+    sx += x;
+    sz += z;
+  }
+  return { x: sx / n, z: sz / n };
+}
+
+function nearMute(
+  b: WorldBuilding,
+  muteNear: Array<{ x: number; z: number; radius: number }>,
+): boolean {
+  if (!muteNear.length) return false;
+  const c = footprintCentroid(b.footprint);
+  for (const m of muteNear) {
+    if (Math.hypot(c.x - m.x, c.z - m.z) <= m.radius) return true;
+  }
+  return false;
+}
+
 function buildChunkGroup(
   chunk: ChunkJson,
   mats: {
@@ -29,6 +52,7 @@ function buildChunkGroup(
     road: Material;
   },
   skipBuildingIds: Set<string>,
+  muteNear: Array<{ x: number; z: number; radius: number }>,
 ): Group {
   const group = new Group();
   group.name = 'chunk';
@@ -47,7 +71,9 @@ function buildChunkGroup(
     .filter((g): g is NonNullable<typeof g> => !!g);
   if (roadGeos.length) group.add(new Mesh(mergeGeometries(roadGeos), mats.road));
 
-  const buildings = (chunk.buildings ?? []).filter((b) => !skipBuildingIds.has(b.id));
+  const buildings = (chunk.buildings ?? []).filter(
+    (b) => !skipBuildingIds.has(b.id) && !nearMute(b, muteNear),
+  );
   const batch = 100;
   for (let i = 0; i < buildings.length; i += batch) {
     const slice = buildings.slice(i, i + batch);
@@ -76,6 +102,8 @@ export function createChunkManager(opts: {
     road: Material;
   };
   skipBuildingIds?: Set<string>;
+  /** Hide generic footprints near diorama landmarks (2A art pass). */
+  muteNear?: Array<{ x: number; z: number; radius: number }>;
   onChange: () => void;
   initialBytes?: number;
 }): ChunkManager {
@@ -85,6 +113,7 @@ export function createChunkManager(opts: {
   let bytesLoaded = opts.initialBytes ?? 0;
   const byId = new Map(opts.manifest.chunks.map((c) => [c.id, c]));
   const skip = opts.skipBuildingIds ?? new Set<string>();
+  const muteNear = opts.muteNear ?? [];
 
   const wantedIds = (cx: number, cz: number, radius: number): Set<string> => {
     const out = new Set<string>();
@@ -119,7 +148,7 @@ export function createChunkManager(opts: {
           buildingMap.set(b.id, b);
           buildingIds.push(b.id);
         }
-        const group = buildChunkGroup(chunk, opts.materials, skip);
+        const group = buildChunkGroup(chunk, opts.materials, skip, muteNear);
         opts.scene.add(group);
         active.set(entry.id, { id: entry.id, group, bytes, buildingIds });
         bytesLoaded += bytes;

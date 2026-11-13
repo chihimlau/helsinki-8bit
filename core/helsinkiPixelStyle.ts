@@ -4,49 +4,53 @@
  */
 export const HELSINKI_PIXEL_STYLE = {
   palette: {
-    cathedralWhite: 0xe9e3d1,
-    cathedralHighlight: 0xf5f0df,
-    cathedralShade: 0xc9c5bb,
+    cathedralWhite: 0xf2ece0,
+    cathedralHighlight: 0xfaf6ee,
+    cathedralShade: 0xc4bfb4,
 
-    domeHighlight: 0x57958b,
-    domeBase: 0x34766e,
-    domeShade: 0x204f4c,
-    domeOutline: 0x183d3b,
+    domeHighlight: 0x5fa398,
+    domeBase: 0x3a7f76,
+    domeShade: 0x245a55,
+    domeOutline: 0x1a4542,
 
     gold: 0xe7b94d,
     goldShade: 0x966c32,
 
-    buildingYellow: 0xd9b978,
-    buildingHighlight: 0xf0d79d,
-    buildingShade: 0xa58a5d,
+    buildingYellow: 0xe2c58a,
+    buildingHighlight: 0xf3d9a4,
+    buildingShade: 0xb09058,
 
-    roof: 0x34394f,
-    roofHighlight: 0x55596c,
-    roofShade: 0x252b3e,
+    roof: 0x2f3448,
+    roofHighlight: 0x4a5064,
+    roofShade: 0x1e2333,
 
-    plazaA: 0xb9ad98,
-    plazaB: 0xa39783,
-    plazaHighlight: 0xd0c3aa,
-    plazaShade: 0x817665,
+    plazaA: 0xc9bda6,
+    plazaB: 0xb8ab94,
+    plazaHighlight: 0xddd0b8,
+    plazaShade: 0x8f8370,
 
-    grass: 0x426f3d,
-    grassHighlight: 0x78a84c,
-    grassShade: 0x294d32,
+    grass: 0x4a7a42,
+    grassHighlight: 0x7eae52,
+    grassShade: 0x2f5236,
 
     water: 0x477baa,
     waterHighlight: 0x76a9c9,
     waterShade: 0x315b8c,
 
-    shadow: 0x343347,
+    shadow: 0x3a3850,
 
     treeDark: 0x24503b,
     treeMidDark: 0x347247,
     treeMidLight: 0x57934b,
-    treeHighlight: 0x83b653,
+    treeHighlight: 0x8fbf58,
 
-    windowGlass: 0x34394f,
+    windowGlass: 0x2c3144,
     windowFrame: 0xe9d9b7,
     lampWarm: 0xe7b94d,
+
+    /** Quiet LoD1 backdrop — must not compete with special meshes */
+    muteWall: 0x9a9286,
+    muteRoof: 0x3a3e4c,
   },
 
   lighting: {
@@ -56,10 +60,10 @@ export const HELSINKI_PIXEL_STYLE = {
   },
 
   geometry: {
-    domeSegments: 12,
+    domeSegments: 10,
     secondaryDomes: 4,
-    facadeColumns: 20,
-    stairTiers: 10,
+    facadeColumns: 14,
+    stairTiers: 8,
     treeFoliageShades: 4,
   },
 
@@ -68,6 +72,9 @@ export const HELSINKI_PIXEL_STYLE = {
     litSideBrightness: 0.9,
     shadeSideBrightness: 0.7,
   },
+
+  /** Hide generic footprints near Square / Cathedral so special meshes read */
+  muteRadiusMeters: 130,
 } as const;
 
 export type HelsinkiPixelPalette = typeof HELSINKI_PIXEL_STYLE.palette;

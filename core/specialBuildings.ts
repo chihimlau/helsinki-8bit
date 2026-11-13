@@ -25,46 +25,35 @@ function box(w: number, h: number, d: number, material: Material, x: number, y: 
   return m;
 }
 
-/** Round chunky foliage: overlapping low-poly clusters, discrete greens (no smooth sphere look). */
+/** Simple lollipop tree: thin trunk + 4-shade puff (upper-left light). */
 function chunkyTree(x: number, z: number, H: number, seed = 1) {
   const g = new Group();
   g.position.set(x, 0, z);
-  const trunk = flat(0x5a3a22);
-  g.add(box(H * 0.09, H * 0.32, H * 0.09, trunk, 0, H * 0.16, 0));
+  g.add(box(H * 0.07, H * 0.28, H * 0.07, flat(0x5a3a22), 0, H * 0.14, 0));
 
-  const shades = [P.treeDark, P.treeMidDark, P.treeMidLight, P.treeHighlight];
-  const mats = shades.map((c) => flat(c));
+  const dark = flat(P.treeDark);
+  const midD = flat(P.treeMidDark);
+  const midL = flat(P.treeMidLight);
+  const hi = flat(P.treeHighlight);
 
-  // Stacked offset clusters (boxes + low-seg spheres with flatShading)
-  const clusters: Array<{ y: number; r: number; n: number; shadeBias: number }> = [
-    { y: H * 0.38, r: H * 0.3, n: 6, shadeBias: 0 },
-    { y: H * 0.55, r: H * 0.35, n: 7, shadeBias: 1 },
-    { y: H * 0.72, r: H * 0.24, n: 5, shadeBias: 2 },
-  ];
-
-  let i = 0;
-  for (const c of clusters) {
-    for (let k = 0; k < c.n; k++) {
-      const ang = (k / c.n) * Math.PI * 2 + seed * 0.7;
-      const ox = Math.cos(ang) * c.r * 0.45;
-      const oz = Math.sin(ang) * c.r * 0.45;
-      const shadeIdx = Math.min(3, c.shadeBias + (oz > 0 ? 0 : 1) + (ox < 0 ? 1 : 0));
-      const mat = mats[shadeIdx] ?? mats[1];
-      // Chunky: mix flat boxes and low-poly spheres
-      if ((k + seed) % 3 === 0) {
-        const s = c.r * (0.55 + ((k + seed) % 5) * 0.06);
-        g.add(box(s, s * 0.85, s, mat, ox, c.y, oz));
-      } else {
-        const sph = new Mesh(new SphereGeometry(c.r * 0.42, 6, 5), mat);
-        sph.position.set(ox, c.y + ((k % 3) - 1) * H * 0.04, oz);
-        g.add(sph);
-      }
-      i++;
-    }
-  }
-  // Upper-left highlight blobs
-  g.add(box(H * 0.16, H * 0.14, H * 0.16, mats[3], -H * 0.12, H * 0.78, -H * 0.08));
-  g.add(box(H * 0.12, H * 0.1, H * 0.12, mats[3], -H * 0.05, H * 0.88, -H * 0.12));
+  const cy = H * 0.52;
+  const r = H * 0.32;
+  // Core + directional shade blobs
+  const core = new Mesh(new SphereGeometry(r, 7, 6), midL);
+  core.position.set(0, cy, 0);
+  g.add(core);
+  const shade = new Mesh(new SphereGeometry(r * 0.72, 6, 5), dark);
+  shade.position.set(r * 0.28, cy - r * 0.15, r * 0.22);
+  g.add(shade);
+  const mid = new Mesh(new SphereGeometry(r * 0.55, 6, 5), midD);
+  mid.position.set(r * 0.1, cy - r * 0.35, -r * 0.05);
+  g.add(mid);
+  // Upper-left highlights
+  g.add(box(r * 0.55, r * 0.45, r * 0.55, hi, -r * 0.35, cy + r * 0.35, -r * 0.25));
+  g.add(box(r * 0.35, r * 0.3, r * 0.35, hi, -r * 0.15, cy + r * 0.55, -r * 0.1));
+  // Slight size jitter from seed without noisy clusters
+  const s = 0.92 + (seed % 5) * 0.03;
+  g.scale.set(s, s, s);
   return g;
 }
 
@@ -75,145 +64,184 @@ function lampPost(x: number, z: number, h: number) {
   const mid = flat(P.roofHighlight);
   const warm = flat(P.lampWarm);
   g.add(box(1.2, 1.2, 1.2, shaft, 0, 0.6, 0));
-  g.add(box(0.9, 1.0, 0.9, mid, 0, 1.5, 0));
-  g.add(box(0.55, h, 0.55, shaft, 0, 1.5 + h / 2, 0));
-  g.add(box(1.4, 1.6, 1.4, shaft, 0, 1.5 + h + 0.8, 0));
-  g.add(box(1.0, 1.0, 0.3, warm, 0, 1.5 + h + 0.8, 0.7));
-  g.add(box(1.6, 0.5, 1.6, mid, 0, 1.5 + h + 1.8, 0));
+  g.add(box(0.55, h, 0.55, shaft, 0, 1.2 + h / 2, 0));
+  g.add(box(1.5, 1.4, 1.5, shaft, 0, 1.2 + h + 0.7, 0));
+  g.add(box(1.0, 1.0, 0.35, warm, 0, 1.2 + h + 0.7, 0.75));
+  g.add(box(1.7, 0.4, 1.7, mid, 0, 1.2 + h + 1.6, 0));
   return g;
 }
 
+/** Dual-pitch roof: two rotated boxes meeting at ridge. */
+function addGabledRoof(
+  g: Group,
+  width: number,
+  depth: number,
+  ridgeY: number,
+  roofMat: Material,
+  pitch = 0.38,
+) {
+  const half = depth * 0.52;
+  const thick = 2.2;
+  const len = Math.hypot(half, half * pitch) + 0.5;
+  const angle = Math.atan2(half * pitch, half);
+  const left = box(width + 2, thick, len, roofMat, 0, ridgeY, -half * 0.45);
+  left.rotation.x = angle;
+  g.add(left);
+  const right = box(width + 2, thick, len, roofMat, 0, ridgeY, half * 0.45);
+  right.rotation.x = -angle;
+  g.add(right);
+  // Ridge cap
+  g.add(box(width + 2.5, 1.4, 2.2, roofMat, 0, ridgeY + half * pitch * 0.55, 0));
+}
+
 /**
- * Helsinki Cathedral — proportions relative to body width W.
- * Anchored at landmark world position (real footprint preserved by skip + placement).
+ * Helsinki Cathedral — chunky silhouette, readable colonnade, quiet teal dome.
  */
 function buildCathedral() {
-  const W = 40;
+  const W = 42;
   const g = new Group();
 
   const wall = createIsoCuboidMaterial({
     top: P.cathedralHighlight,
     sideLit: P.cathedralWhite,
     sideShade: P.cathedralShade,
-    dither: 0.05,
+    dither: 0.015,
   });
   const cool = createIsoCuboidMaterial({
     top: P.cathedralHighlight,
+    sideLit: P.cathedralWhite,
+    sideShade: 0xa8a49a,
+    dither: 0.01,
+  });
+  const colLit = createIsoCuboidMaterial({
+    top: P.cathedralHighlight,
+    sideLit: P.cathedralHighlight,
+    sideShade: P.cathedralShade,
+    dither: 0,
+  });
+  const colShade = createIsoCuboidMaterial({
+    top: P.cathedralWhite,
     sideLit: P.cathedralShade,
-    sideShade: 0xaaa69e,
-    dither: 0.04,
+    sideShade: 0x9a968c,
+    dither: 0,
   });
   const dome = createIsoCuboidMaterial({
     top: P.domeHighlight,
     sideLit: P.domeBase,
     sideShade: P.domeShade,
-    dither: 0.08,
+    dither: 0.02,
   });
   const domeDark = createIsoCuboidMaterial({
     top: P.domeBase,
     sideLit: P.domeShade,
     sideShade: P.domeOutline,
-    dither: 0.06,
+    dither: 0.01,
   });
   const gold = createIsoCuboidMaterial({
     top: 0xf4d274,
     sideLit: P.gold,
     sideShade: P.goldShade,
-    dither: 0.04,
+    dither: 0,
   });
   const stair = createIsoCuboidMaterial({
     top: P.plazaHighlight,
     sideLit: P.plazaA,
     sideShade: P.plazaShade,
-    dither: 0.07,
+    dither: 0.02,
   });
 
-  // 1 Foundation
-  g.add(box(W, 0.08 * W, 0.72 * W, cool, 0, 0.04 * W, 0));
-  // Terrace under stairs
-  g.add(box(1.15 * W, 0.1 * W, 0.55 * W, cool, 0, 0.1 * W, 0.15 * W));
+  // Foundation + terrace
+  g.add(box(W, 0.1 * W, 0.75 * W, cool, 0, 0.05 * W, 0));
+  g.add(box(1.2 * W, 0.12 * W, 0.58 * W, cool, 0, 0.12 * W, 0.12 * W));
 
-  // Stairs toward +Z (Senate Square) — 10 tiers
+  // Chunky stairs toward +Z (Senate Square)
   const tiers = G.stairTiers;
   for (let i = 0; i < tiers; i++) {
-    const t = i / tiers;
-    const ww = 1.25 * W - t * 0.15 * W;
-    g.add(
-      box(ww, (0.2 * W) / tiers, 0.08 * W, stair, 0, 0.05 * W + i * ((0.2 * W) / tiers), 0.38 * W + i * 0.07 * W),
-    );
+    const t = i / Math.max(tiers - 1, 1);
+    const ww = 1.28 * W - t * 0.22 * W;
+    const stepH = 0.035 * W;
+    g.add(box(ww, stepH, 0.095 * W, stair, 0, 0.06 * W + i * stepH, 0.42 * W - i * 0.055 * W));
   }
 
-  // 2 Main body
-  g.add(box(W, 0.55 * W, 0.68 * W, wall, 0, 0.08 * W + 0.275 * W, 0));
-  // Cruciform arms
-  g.add(box(1.35 * W, 0.42 * W, 0.42 * W, wall, 0, 0.08 * W + 0.25 * W, 0));
-  g.add(box(0.42 * W, 0.42 * W, 1.15 * W, wall, 0, 0.08 * W + 0.25 * W, 0));
+  // Main body + cruciform
+  g.add(box(W, 0.58 * W, 0.7 * W, wall, 0, 0.1 * W + 0.29 * W, 0));
+  g.add(box(1.38 * W, 0.44 * W, 0.44 * W, wall, 0, 0.1 * W + 0.26 * W, 0));
+  g.add(box(0.44 * W, 0.44 * W, 1.18 * W, wall, 0, 0.1 * W + 0.26 * W, 0));
 
-  // Facade columns (~20) facing +Z
-  const colH = 0.44 * W;
-  const colD = 0.03 * W;
-  for (let i = 0; i < G.facadeColumns; i++) {
-    const u = i / (G.facadeColumns - 1);
-    const x = (u - 0.5) * 0.9 * W;
-    g.add(box(colD, colH, colD, cool, x, 0.12 * W + colH / 2, 0.36 * W));
+  // Colonnade: fewer, thicker columns — alternate lit / shade
+  const colH = 0.46 * W;
+  const colD = 0.055 * W;
+  const nCol = G.facadeColumns;
+  for (let i = 0; i < nCol; i++) {
+    const u = i / (nCol - 1);
+    const x = (u - 0.5) * 0.88 * W;
+    const mat = i % 2 === 0 ? colLit : colShade;
+    g.add(box(colD, colH, colD * 1.1, mat, x, 0.14 * W + colH / 2, 0.38 * W));
   }
-  // Portico / pediment
-  g.add(box(0.95 * W, 0.08 * W, 0.12 * W, cool, 0, 0.12 * W + colH + 0.04 * W, 0.36 * W));
-  g.add(box(0.7 * W, 0.1 * W, 0.08 * W, cool, 0, 0.12 * W + colH + 0.12 * W, 0.38 * W));
+  // Pediment
+  g.add(box(0.98 * W, 0.09 * W, 0.14 * W, cool, 0, 0.14 * W + colH + 0.05 * W, 0.38 * W));
+  g.add(box(0.55 * W, 0.12 * W, 0.1 * W, cool, 0, 0.14 * W + colH + 0.14 * W, 0.4 * W));
+  g.add(box(0.28 * W, 0.1 * W, 0.08 * W, cool, 0, 0.14 * W + colH + 0.22 * W, 0.41 * W));
 
-  // 3 Raised central roof
-  g.add(box(0.68 * W, 0.12 * W, 0.52 * W, cool, 0, 0.08 * W + 0.55 * W + 0.06 * W, 0));
+  // Raised central block under drum
+  g.add(box(0.7 * W, 0.14 * W, 0.54 * W, cool, 0, 0.1 * W + 0.58 * W + 0.07 * W, 0));
 
-  // 4–7 Central drum + dome
-  const drumY = 0.08 * W + 0.55 * W + 0.12 * W + 0.12 * W;
-  g.add(box(0.36 * W, 0.25 * W, 0.36 * W, cool, 0, drumY + 0.125 * W, 0));
-  // Drum columns ring
-  for (let i = 0; i < 14; i++) {
-    const a = (i / 14) * Math.PI * 2;
-    const r = 0.2 * W;
-    g.add(box(0.025 * W, 0.22 * W, 0.025 * W, cool, Math.cos(a) * r, drumY + 0.11 * W, Math.sin(a) * r));
+  // Drum + dome
+  const drumY = 0.1 * W + 0.58 * W + 0.14 * W + 0.1 * W;
+  g.add(box(0.38 * W, 0.28 * W, 0.38 * W, cool, 0, drumY + 0.14 * W, 0));
+  for (let i = 0; i < 12; i++) {
+    const a = (i / 12) * Math.PI * 2;
+    const r = 0.21 * W;
+    const mat = i % 2 === 0 ? colLit : colShade;
+    g.add(box(0.04 * W, 0.24 * W, 0.04 * W, mat, Math.cos(a) * r, drumY + 0.12 * W, Math.sin(a) * r));
   }
-  const ring = new Mesh(new CylinderGeometry(0.21 * W, 0.21 * W, 0.04 * W, G.domeSegments), cool);
-  ring.position.set(0, drumY + 0.26 * W, 0);
+  const ring = new Mesh(new CylinderGeometry(0.22 * W, 0.22 * W, 0.05 * W, G.domeSegments), cool);
+  ring.position.set(0, drumY + 0.28 * W, 0);
   g.add(ring);
 
-  const mainDome = new Mesh(new SphereGeometry(0.215 * W, G.domeSegments, 10), dome);
-  mainDome.position.set(0, drumY + 0.26 * W + 0.12 * W, 0);
+  const mainDome = new Mesh(new SphereGeometry(0.22 * W, G.domeSegments, 8), dome);
+  mainDome.position.set(0, drumY + 0.28 * W + 0.12 * W, 0);
   g.add(mainDome);
-  // Meridian strips (segmentation)
-  for (let i = 0; i < 8; i++) {
-    const a = (i / 8) * Math.PI * 2;
-    const strip = box(0.02 * W, 0.28 * W, 0.02 * W, domeDark, Math.cos(a) * 0.18 * W, drumY + 0.38 * W, Math.sin(a) * 0.18 * W);
-    g.add(strip);
+  // Ribs
+  for (let i = 0; i < 6; i++) {
+    const a = (i / 6) * Math.PI * 2;
+    g.add(
+      box(
+        0.025 * W,
+        0.26 * W,
+        0.025 * W,
+        domeDark,
+        Math.cos(a) * 0.185 * W,
+        drumY + 0.4 * W,
+        Math.sin(a) * 0.185 * W,
+      ),
+    );
   }
-  g.add(box(0.12 * W, 0.07 * W, 0.12 * W, domeDark, 0, drumY + 0.26 * W + 0.32 * W, 0));
-  // Gold finial + cross
-  const finY = drumY + 0.26 * W + 0.38 * W;
-  g.add(box(0.04 * W, 0.05 * W, 0.04 * W, gold, 0, finY, 0));
-  g.add(box(0.025 * W, 0.13 * W, 0.025 * W, gold, 0, finY + 0.09 * W, 0));
-  g.add(box(0.09 * W, 0.025 * W, 0.025 * W, gold, 0, finY + 0.11 * W, 0));
+  g.add(box(0.14 * W, 0.08 * W, 0.14 * W, domeDark, 0, drumY + 0.28 * W + 0.34 * W, 0));
+  const finY = drumY + 0.28 * W + 0.4 * W;
+  g.add(box(0.045 * W, 0.05 * W, 0.045 * W, gold, 0, finY, 0));
+  g.add(box(0.028 * W, 0.14 * W, 0.028 * W, gold, 0, finY + 0.1 * W, 0));
+  g.add(box(0.1 * W, 0.028 * W, 0.028 * W, gold, 0, finY + 0.12 * W, 0));
 
-  // Four secondary domes
-  const secR = 0.17 * W;
+  // Four corner domes
   for (const [cx, cz] of [
-    [-0.38 * W, -0.32 * W],
-    [0.38 * W, -0.32 * W],
-    [-0.38 * W, 0.28 * W],
-    [0.38 * W, 0.28 * W],
+    [-0.4 * W, -0.34 * W],
+    [0.4 * W, -0.34 * W],
+    [-0.4 * W, 0.3 * W],
+    [0.4 * W, 0.3 * W],
   ] as const) {
-    g.add(box(0.16 * W, 0.14 * W, 0.16 * W, cool, cx, 0.08 * W + 0.45 * W, cz));
-    const d = new Mesh(new SphereGeometry(secR * 0.55, 10, 8), dome);
-    d.position.set(cx, 0.08 * W + 0.55 * W + 0.08 * W, cz);
+    g.add(box(0.17 * W, 0.16 * W, 0.17 * W, cool, cx, 0.1 * W + 0.48 * W, cz));
+    const d = new Mesh(new SphereGeometry(0.1 * W, 8, 6), dome);
+    d.position.set(cx, 0.1 * W + 0.58 * W + 0.06 * W, cz);
     g.add(d);
-    g.add(box(0.02 * W, 0.06 * W, 0.02 * W, gold, cx, 0.08 * W + 0.55 * W + 0.16 * W, cz));
+    g.add(box(0.022 * W, 0.07 * W, 0.022 * W, gold, cx, 0.1 * W + 0.58 * W + 0.15 * W, cz));
   }
 
-  // Soft cast shadow
+  // Hard cast shadow (purple-grey)
   const shMat = flat(P.shadow);
   shMat.transparent = true;
-  shMat.opacity = 0.45;
-  const sh = new Mesh(new CylinderGeometry(0.7 * W, 0.85 * W, 0.4, 16), shMat);
-  sh.position.set(0.08 * W, 0.25, 0.12 * W);
+  shMat.opacity = 0.4;
+  const sh = box(0.95 * W, 0.35, 0.7 * W, shMat, 0.12 * W, 0.2, 0.18 * W);
   g.add(sh);
 
   return g;
@@ -227,34 +255,30 @@ function buildSenateSquare() {
     top: P.plazaHighlight,
     sideLit: P.plazaA,
     sideShade: P.plazaShade,
-    dither: 0.05,
+    dither: 0.015,
   });
   const plinth = createIsoCuboidMaterial({
     top: P.plazaHighlight,
     sideLit: P.plazaA,
     sideShade: P.plazaShade,
-    dither: 0.04,
+    dither: 0.01,
   });
   const statue = createIsoCuboidMaterial({
-    top: 0x43836b,
-    sideLit: 0x285c4e,
-    sideShade: 0x193e38,
-    dither: 0.05,
+    top: 0x4a8f74,
+    sideLit: 0x2f6a58,
+    sideShade: 0x1c443c,
+    dither: 0.01,
   });
 
-  // Full plaza plate (footprint-sized ~110m)
   g.add(box(110, 0.7, 110, plaza, 0, 0.35, 0));
-  // Border curb tiles
   for (let i = -5; i <= 5; i++) {
     g.add(box(9, 1.1, 9, curb, i * 10, 0.95, -52));
     g.add(box(9, 1.1, 9, curb, i * 10, 0.95, 52));
     g.add(box(9, 1.1, 9, curb, -52, 0.95, i * 10));
     g.add(box(9, 1.1, 9, curb, 52, 0.95, i * 10));
   }
-  // Stair approach border (toward cathedral / -Z)
   g.add(box(1.25 * W, 1.2, 8, curb, 0, 1.0, -42));
 
-  // Statue plinth tiers
   g.add(box(0.55 * W, 2.5, 0.55 * W, plinth, 0, 1.5, 0));
   g.add(box(0.42 * W, 3.5, 0.42 * W, plinth, 0, 4.5, 0));
   g.add(box(0.28 * W, 5, 0.28 * W, plinth, 0, 8.5, 0));
@@ -264,7 +288,6 @@ function buildSenateSquare() {
   head.position.set(0, 23, 0);
   g.add(head);
 
-  // Lamp posts along edges
   const lamps: Array<[number, number]> = [
     [-40, -40],
     [40, -40],
@@ -280,18 +303,19 @@ function buildSenateSquare() {
     g.add(lampPost(lx, lz, 0.12 * W));
   }
 
-  // Perimeter trees (chunky round)
   const trees: Array<[number, number, number, number]> = [
-    [-48, -48, 14, 1],
-    [48, -48, 13, 2],
-    [-48, 48, 15, 3],
-    [48, 48, 14, 4],
-    [-48, -10, 16, 5],
-    [48, -10, 15, 6],
-    [-48, 20, 14, 7],
-    [48, 20, 13, 8],
-    [-20, -50, 12, 9],
-    [20, -50, 13, 10],
+    [-48, -48, 15, 1],
+    [48, -48, 14, 2],
+    [-48, 48, 16, 3],
+    [48, 48, 15, 4],
+    [-48, -10, 17, 5],
+    [48, -10, 16, 6],
+    [-48, 20, 15, 7],
+    [48, 20, 14, 8],
+    [-20, -50, 13, 9],
+    [20, -50, 14, 10],
+    [-35, 45, 14, 11],
+    [35, 45, 13, 12],
   ];
   for (const [tx, tz, h, seed] of trees) {
     g.add(chunkyTree(tx, tz, h, seed));
@@ -306,27 +330,24 @@ function buildFlankingPalace() {
     top: P.buildingHighlight,
     sideLit: P.buildingYellow,
     sideShade: P.buildingShade,
-    dither: 0.05,
+    dither: 0.015,
   });
   const roof = createIsoCuboidMaterial({
     top: P.roofHighlight,
     sideLit: P.roof,
     sideShade: P.roofShade,
-    dither: 0.04,
+    dither: 0.01,
   });
-  const frame = flat(P.windowFrame);
   const glass = flat(P.windowGlass);
   g.add(box(56, 26, 22, wall, 0, 13, 0));
-  g.add(box(58, 4, 24, roof, 0, 28, 0));
-  // Windows grid
+  addGabledRoof(g, 56, 22, 28, roof, 0.42);
   for (let row = 0; row < 3; row++) {
     for (let col = -4; col <= 4; col++) {
-      g.add(box(2.2, 3.2, 0.4, glass, col * 5.5, 8 + row * 6, 11.2));
-      g.add(box(2.6, 3.6, 0.25, frame, col * 5.5, 8 + row * 6, 11.15));
+      g.add(box(2.0, 3.0, 0.35, glass, col * 5.5, 8 + row * 6, 11.2));
     }
   }
   for (let i = -4; i <= 4; i++) {
-    g.add(box(2.2, 12, 2.2, flat(P.cathedralHighlight), i * 6, 14, 12));
+    g.add(box(2.0, 12, 2.0, flat(P.cathedralHighlight), i * 6, 14, 11.8));
   }
   return g;
 }
@@ -337,20 +358,22 @@ function buildFlankingUniversity() {
     top: P.buildingHighlight,
     sideLit: P.buildingYellow,
     sideShade: P.buildingShade,
-    dither: 0.05,
+    dither: 0.015,
   });
   const roof = createIsoCuboidMaterial({
     top: P.roofHighlight,
     sideLit: P.roof,
     sideShade: P.roofShade,
-    dither: 0.04,
+    dither: 0.01,
   });
   g.add(box(64, 24, 22, wall, 0, 12, 0));
-  g.add(box(66, 3.5, 24, roof, 0, 25.5, 0));
+  addGabledRoof(g, 64, 22, 26, roof, 0.4);
   for (let i = -5; i <= 5; i++) {
-    g.add(box(2, 14, 2, flat(P.cathedralHighlight), i * 5, 11, 12));
+    g.add(box(2, 14, 2, flat(P.cathedralHighlight), i * 5, 11, 11.8));
   }
-  g.add(box(24, 12, 12, wall, 0, 30, 0));
+  // Central pediment block
+  g.add(box(22, 10, 10, wall, 0, 30, 0));
+  g.add(box(24, 2.5, 12, roof, 0, 36, 0));
   return g;
 }
 
@@ -360,22 +383,25 @@ function buildLibrary() {
     top: P.cathedralHighlight,
     sideLit: P.cathedralWhite,
     sideShade: P.cathedralShade,
+    dither: 0.015,
   });
   const roof = createIsoCuboidMaterial({
     top: P.roofHighlight,
     sideLit: P.roof,
     sideShade: P.roofShade,
+    dither: 0.01,
   });
   const dome = createIsoCuboidMaterial({
     top: P.domeHighlight,
     sideLit: P.domeBase,
     sideShade: P.domeShade,
+    dither: 0.02,
   });
   g.add(box(36, 18, 28, wall, 0, 9, 0));
   const rotunda = new Mesh(new CylinderGeometry(14, 14, 18, 12), wall);
   rotunda.position.set(0, 18, 0);
   g.add(rotunda);
-  const lid = new Mesh(new SphereGeometry(13, 12, 10), dome);
+  const lid = new Mesh(new SphereGeometry(13, 10, 8), dome);
   lid.scale.set(1, 0.5, 1);
   lid.position.set(0, 28, 0);
   g.add(lid);
@@ -395,14 +421,16 @@ function buildStation() {
     top: P.cathedralHighlight,
     sideLit: P.cathedralWhite,
     sideShade: P.cathedralShade,
+    dither: 0.015,
   });
   const roof = createIsoCuboidMaterial({
     top: P.roofHighlight,
     sideLit: P.roof,
     sideShade: P.roofShade,
+    dither: 0.01,
   });
   g.add(box(70, 28, 30, wall, 0, 14, 0));
-  g.add(box(74, 5, 34, roof, 0, 30, 0));
+  addGabledRoof(g, 70, 30, 30, roof, 0.28);
   g.add(box(12, 40, 12, wall, -28, 20, 10));
   g.add(box(12, 40, 12, wall, 28, 20, 10));
   return g;
@@ -439,4 +467,16 @@ export function addSpecialLandmarks(scene: Object3D, landmarks: LandmarkWorld[])
 
   scene.add(root);
   return root;
+}
+
+/** Centers used to mute generic LoD1 near the diorama island. */
+export function dioramaMuteCenters(landmarks: LandmarkWorld[]): Array<{ x: number; z: number; radius: number }> {
+  const r = HELSINKI_PIXEL_STYLE.muteRadiusMeters;
+  const out: Array<{ x: number; z: number; radius: number }> = [];
+  for (const lm of landmarks) {
+    if (lm.special === 'cathedral' || lm.id === 'hel-senate-square' || lm.special === 'palace' || lm.special === 'university') {
+      out.push({ x: lm.x, z: lm.z, radius: r });
+    }
+  }
+  return out;
 }

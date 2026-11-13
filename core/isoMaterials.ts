@@ -10,7 +10,7 @@ export function createIsoCuboidMaterial(opts: {
   sideShade: number;
   dither?: number;
 }): ShaderMaterial {
-  const dither = opts.dither ?? 0.06;
+  const dither = opts.dither ?? 0.02;
   return new ShaderMaterial({
     uniforms: {
       uTop: { value: new Color(opts.top) },
@@ -46,16 +46,16 @@ void main() {
     float lit = step(0.45, max(dot(n, normalize(uSunDir)), 0.0));
     base = mix(uSideShade, uSideLit, lit);
   }
-  float d = step(0.5, fract(vWorldPos.x * 0.6 + vWorldPos.z * 0.6 + vWorldPos.y * 0.4));
+  float d = step(0.5, fract(vWorldPos.x * 0.45 + vWorldPos.z * 0.45 + vWorldPos.y * 0.3));
   base = mix(base, base * (1.0 - uDither), d);
-  base = floor(base * 12.0 + 0.5) / 12.0;
+  base = floor(base * 10.0 + 0.5) / 10.0;
   gl_FragColor = vec4(base, 1.0);
 }
 `,
   });
 }
 
-/** Plaza paving with A/B/highlight/shadow distribution. */
+/** Plaza paving — bright, large tiles, quiet grout (diorama read). */
 export function createIsoPlazaMaterial(): ShaderMaterial {
   const p = HELSINKI_PIXEL_STYLE.palette;
   return new ShaderMaterial({
@@ -86,21 +86,20 @@ varying vec3 vWorldPos;
 varying vec3 vNormalW;
 void main() {
   vec3 n = normalize(vNormalW);
-  float gx = floor(vWorldPos.x * 0.28);
-  float gz = floor(vWorldPos.z * 0.28);
+  float gx = floor(vWorldPos.x * 0.18);
+  float gz = floor(vWorldPos.z * 0.18);
   float checker = mod(gx + gz, 2.0);
-  float r = fract(sin(gx * 12.9898 + gz * 78.233) * 43758.5453);
   vec3 top = mix(uA, uB, checker);
-  if (r > 0.85) top = uHi;
-  if (r < 0.08) top = uSh;
-  // Grout lines
-  float fx = fract(vWorldPos.x * 0.28);
-  float fz = fract(vWorldPos.z * 0.28);
-  float grout = step(fx, 0.06) + step(fz, 0.06);
-  top = mix(top, uSh, clamp(grout, 0.0, 1.0) * 0.45);
+  // sparse highlight only
+  float r = fract(sin(gx * 12.9898 + gz * 78.233) * 43758.5453);
+  if (r > 0.93) top = uHi;
+  float fx = fract(vWorldPos.x * 0.18);
+  float fz = fract(vWorldPos.z * 0.18);
+  float grout = step(fx, 0.04) + step(fz, 0.04);
+  top = mix(top, uSh, clamp(grout, 0.0, 1.0) * 0.28);
   float lit = step(0.4, max(dot(n, normalize(uSunDir)), 0.0));
-  vec3 col = n.y > 0.5 ? top : mix(uSh, top, 0.35 + lit * 0.4);
-  col = floor(col * 12.0 + 0.5) / 12.0;
+  vec3 col = n.y > 0.5 ? top : mix(uSh, top, 0.4 + lit * 0.35);
+  col = floor(col * 10.0 + 0.5) / 10.0;
   gl_FragColor = vec4(col, 1.0);
 }
 `,

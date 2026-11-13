@@ -56,9 +56,10 @@ void main() {
   vec3 col = mix(baseCol, winCol, float(isWall) * windowMask);
 
   float ndl = max(dot(n, normalize(uSunDir)), 0.0);
-  // Stronger side shading for chunky pixel volume
-  float shade = mix(0.55, 1.05, ndl);
+  // Stepped shade (3 bands) — quieter LoD1 backdrop
+  float shade = ndl > 0.55 ? 1.0 : (ndl > 0.25 ? 0.78 : 0.58);
   vec3 lit = col * (uAmbient * uAmbientIntensity + vec3(1.0) * (uSunIntensity * shade));
+  lit = floor(lit * 10.0 + 0.5) / 10.0;
   gl_FragColor = vec4(lit, 1.0);
 }
 `;

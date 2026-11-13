@@ -21,7 +21,7 @@ import {
 import { PALETTES, resolvePreset, type PresetName } from './palette';
 import { pickBuilding } from './picking';
 import { createPixelPipeline } from './pixelPipeline';
-import { addSpecialLandmarks } from './specialBuildings';
+import { addSpecialLandmarks, dioramaMuteCenters } from './specialBuildings';
 import type { AreaManifest, LandmarkWorld } from './types';
 
 export type CreateAppOptions = {
@@ -126,6 +126,7 @@ export function createApp(opts: CreateAppOptions) {
       road: roadMat,
     },
     skipBuildingIds,
+    muteNear: dioramaMuteCenters(opts.landmarks),
     initialBytes: opts.initialBytes,
     onChange: () => {
       debug.setLoad(
@@ -266,15 +267,18 @@ export function createApp(opts: CreateAppOptions) {
   };
   tick();
 
-  // 2A: frame Senate Square looking toward Cathedral (shared composition)
+  // 2A art: hero frame Square → Cathedral (day diorama composition)
   const cathedral = opts.landmarks.find((l) => l.special === 'cathedral');
   const square = opts.landmarks.find((l) => l.id === 'hel-senate-square');
   if (cathedral && square) {
-    controls.setTarget((cathedral.x + square.x) / 2, (cathedral.z + square.z) / 2);
-    controls.setZoom(270);
+    controls.setTarget(
+      cathedral.x * 0.55 + square.x * 0.45,
+      cathedral.z * 0.4 + square.z * 0.6,
+    );
+    controls.setZoom(240);
   } else if (cathedral) {
     controls.setTarget(cathedral.x, cathedral.z + 40);
-    controls.setZoom(290);
+    controls.setZoom(260);
   } else if (opts.landmarks[0]) {
     controls.setTarget(opts.landmarks[0].x, opts.landmarks[0].z);
     controls.setZoom(300);
