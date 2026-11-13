@@ -1,5 +1,5 @@
 import { createApp, resolvePreset } from '../core/createApp';
-import { loadAreaData } from '../core/loadArea';
+import { loadManifest } from '../core/loadArea';
 
 const AREA_ID = 'helsinki-kruununhaka';
 const DATA_URL = `/areas/${AREA_ID}/data`;
@@ -20,23 +20,33 @@ async function boot() {
   const preset = resolvePreset(params.get('preset'));
 
   try {
-    const [area, configRes] = await Promise.all([
-      loadAreaData(DATA_URL),
+    const t0 = performance.now();
+    const [manifestLoad, configRes] = await Promise.all([
+      loadManifest(DATA_URL),
       fetch(CONFIG_URL).then(async (r) => {
         if (!r.ok) return {} as AreaConfig;
         return (await r.json()) as AreaConfig;
       }),
     ]);
+
     createApp({
       container,
       hud,
       debugEl,
-      area,
+      manifest: manifestLoad.manifest,
+      dataBaseUrl: manifestLoad.dataBaseUrl,
+      initialBytes: manifestLoad.bytesLoaded,
       debug,
       preset,
       internalWidth: configRes.render?.internalWidth ?? 480,
       internalHeight: configRes.render?.internalHeight ?? 270,
     });
+
+    console.info(`first paint setup ${Math.round(performance.now() - t0)} ms (manifest only)`);
+
+    if ('serviceWorker' in navigator) {
+      navigator.serviceWorker.register('/sw.js').catch(() => undefined);
+    }
   } catch (e) {
     hud.textContent =
       'No area data yet. Run pipeline with --fetch on Actions/Cloud, then npm run build.';

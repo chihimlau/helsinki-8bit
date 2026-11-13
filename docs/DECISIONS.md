@@ -17,7 +17,7 @@
 - 成本：純靜態、Cloudflare Pages 免費方案、PWA，之後 Capacitor
 
 ## 待決定
-- 資料壓縮格式（M3）
+- **資料壓縮（M3）**：建議 A = chunk `.json.gz` + 瀏覽器 `DecompressionStream`（無新 npm 套件）；B = 只靠主機 gzip；C = 自訂 binary。等你選再做。
 - LoD2 屋頂簡化程度（若之後取得 CityGML）
 - CityGML 圖幅／`kartta.hel.fi/3d` 區域下載是否可恢復為建築升級來源（不阻塞 MVP）
 

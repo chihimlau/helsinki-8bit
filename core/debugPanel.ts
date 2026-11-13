@@ -1,14 +1,15 @@
-import type { LoadedArea } from './types';
+import type { AreaManifest } from './types';
 
 export type DebugApi = {
   setFps: (fps: number) => void;
   setDrawCalls: (n: number) => void;
+  setLoad: (bytes: number, chunksLoaded: number, chunksTotal: number) => void;
   mountCameras: (buttons: Array<{ label: string; onClick: () => void }>) => void;
 };
 
 export function createDebugPanel(
   el: HTMLElement,
-  area: LoadedArea,
+  manifest: AreaManifest,
   enabled: boolean,
 ): DebugApi {
   if (!enabled) {
@@ -16,11 +17,12 @@ export function createDebugPanel(
     return {
       setFps: () => undefined,
       setDrawCalls: () => undefined,
+      setLoad: () => undefined,
       mountCameras: () => undefined,
     };
   }
   el.style.display = 'block';
-  const stats = area.manifest.stats;
+  const stats = manifest.stats;
   const sourceLines = Object.entries(stats.buildingsBySource)
     .map(([k, v]) => `${k}: ${v}`)
     .join(', ');
@@ -31,7 +33,8 @@ export function createDebugPanel(
     <div>sources: ${sourceLines || '—'}</div>
     <div>LoD1 / LoD2: ${stats.lod1} / ${stats.lod2}</div>
     <div>roads / parks / water: ${stats.roads} / ${stats.parks} / ${stats.water}</div>
-    <div>load: ${(area.bytesLoaded / 1024).toFixed(1)} KB</div>
+    <div id="dbg-load">load: —</div>
+    <div id="dbg-chunks">chunks: —</div>
     <div id="dbg-draw">drawCalls: —</div>
     <div id="dbg-fps">FPS: —</div>
     <div id="dbg-cams"></div>
@@ -44,6 +47,12 @@ export function createDebugPanel(
     setDrawCalls: (n) => {
       const d = el.querySelector('#dbg-draw');
       if (d) d.textContent = `drawCalls: ${n}`;
+    },
+    setLoad: (bytes, chunksLoaded, chunksTotal) => {
+      const l = el.querySelector('#dbg-load');
+      if (l) l.textContent = `load: ${(bytes / 1024).toFixed(1)} KB`;
+      const c = el.querySelector('#dbg-chunks');
+      if (c) c.textContent = `chunks: ${chunksLoaded} / ${chunksTotal}`;
     },
     mountCameras: (buttons) => {
       const box = el.querySelector('#dbg-cams');

@@ -8,23 +8,21 @@ import {
   Scene,
   WebGLRenderer,
 } from 'three';
+import { createChunkManager } from './chunkManager';
 import { attachMapControls } from './controls';
 import { createDebugPanel } from './debugPanel';
-import { buildingExtrude, mergeGeometries, polyGeometry, roadGeometry } from './geometry';
-import {
-  applyPaletteToBuildingMaterial,
-  createBuildingMaterial,
-  createLambert,
-} from './materials';
+import { createLambert, createBuildingMaterial, applyPaletteToBuildingMaterial } from './materials';
 import { PALETTES, resolvePreset, type PresetName } from './palette';
 import { createPixelPipeline } from './pixelPipeline';
-import type { LoadedArea } from './types';
+import type { AreaManifest } from './types';
 
 export type CreateAppOptions = {
   container: HTMLElement;
   hud: HTMLElement;
   debugEl: HTMLElement;
-  area: LoadedArea;
+  manifest: AreaManifest;
+  dataBaseUrl: string;
+  initialBytes: number;
   debug: boolean;
   preset?: PresetName;
   internalWidth?: number;
@@ -71,7 +69,7 @@ export function createApp(opts: CreateAppOptions) {
   sun.position.set(80, 120, 40);
   scene.add(sun);
 
-  const b = opts.area.manifest.bounds;
+  const b = opts.manifest.bounds;
   const groundW = Math.max(200, b.maxX - b.minX + 80);
   const groundD = Math.max(200, b.maxZ - b.minZ + 80);
   const groundMat = createLambert(palette.ground);
@@ -85,40 +83,57 @@ export function createApp(opts: CreateAppOptions) {
   const roadMat = createLambert(palette.road);
   const buildingMat = createBuildingMaterial(palette);
 
-  const parkGeos = opts.area.parks.map((p) => polyGeometry(p, 0.04));
-  if (parkGeos.length) scene.add(new Mesh(mergeGeometries(parkGeos), parkMat));
-
-  const waterGeos = opts.area.water.map((w) => polyGeometry(w, 0.02));
-  if (waterGeos.length) scene.add(new Mesh(mergeGeometries(waterGeos), waterMat));
-
-  const roadGeos = opts.area.roads
-    .map((r) => roadGeometry(r))
-    .filter((g): g is NonNullable<typeof g> => !!g);
-  if (roadGeos.length) scene.add(new Mesh(mergeGeometries(roadGeos), roadMat));
-
-  const batch = 80;
-  for (let i = 0; i < opts.area.buildings.length; i += batch) {
-    const slice = opts.area.buildings.slice(i, i + batch);
-    scene.add(new Mesh(mergeGeometries(slice.map(buildingExtrude)), buildingMat));
-  }
-
   const pixel = createPixelPipeline(internalW, internalH, palette);
 
-  opts.hud.innerHTML = `${opts.area.manifest.attribution.join(' · ')} · <span id="preset-label">${preset}</span>`;
+  opts.hud.innerHTML = `${opts.manifest.attribution.join(' · ')} · <span id="preset-label">${preset}</span>`;
 
   let needsRender = true;
   const requestRender = () => {
     needsRender = true;
   };
 
+  const debug = createDebugPanel(opts.debugEl, opts.manifest, opts.debug);
+  debug.setLoad(opts.initialBytes, 0, opts.manifest.chunks.length);
+
+  const chunks = createChunkManager({
+    scene,
+    manifest: opts.manifest,
+    dataBaseUrl: opts.dataBaseUrl,
+    materials: {
+      building: buildingMat,
+      park: parkMat,
+      water: waterMat,
+      road: roadMat,
+    },
+    initialBytes: opts.initialBytes,
+    onChange: () => {
+      debug.setLoad(
+        chunks.getBytesLoaded(),
+        chunks.getLoadedChunkCount(),
+        opts.manifest.chunks.length,
+      );
+      requestRender();
+    },
+  });
+
+  let syncChunks = () => undefined;
   const controls = attachMapControls(renderer.domElement, camera, {
     getFrustum: () => frustum,
     setFrustum: (f) => {
       frustum = f;
     },
     getAspect: () => rtAspect,
-    onChange: requestRender,
+    onChange: () => {
+      syncChunks();
+      requestRender();
+    },
   });
+
+  syncChunks = () => {
+    const t = controls.getTarget();
+    const viewRadius = frustum * 0.9;
+    chunks.sync(t.x, t.z, viewRadius);
+  };
 
   const applyPreset = (next: PresetName) => {
     preset = next;
@@ -143,7 +158,6 @@ export function createApp(opts: CreateAppOptions) {
     requestRender();
   };
 
-  const debug = createDebugPanel(opts.debugEl, opts.area, opts.debug);
   const cams = [
     { label: 'Square', x: 0, z: 0, zoom: 280 },
     { label: 'Cathedral', x: -15, z: -55, zoom: 200 },
@@ -155,19 +169,13 @@ export function createApp(opts: CreateAppOptions) {
       onClick: () => {
         controls.setTarget(c.x, c.z);
         controls.setZoom(c.zoom);
+        syncChunks();
       },
     })),
-    {
-      label: 'Day',
-      onClick: () => applyPreset('day'),
-    },
-    {
-      label: 'Dusk',
-      onClick: () => applyPreset('dusk'),
-    },
+    { label: 'Day', onClick: () => applyPreset('day') },
+    { label: 'Dusk', onClick: () => applyPreset('dusk') },
   ]);
 
-  // Always-visible preset toggle (even without debug)
   const toggle = document.createElement('button');
   toggle.textContent = 'day / dusk';
   toggle.style.cssText =
@@ -176,26 +184,24 @@ export function createApp(opts: CreateAppOptions) {
   document.body.appendChild(toggle);
 
   const onResize = () => {
-    const w = opts.container.clientWidth;
-    const h = opts.container.clientHeight;
-    renderer.setSize(w, h, false);
+    renderer.setSize(opts.container.clientWidth, opts.container.clientHeight, false);
     requestRender();
   };
   window.addEventListener('resize', onResize);
 
-  let frames = 0;
+  let renderedFrames = 0;
   let lastFps = performance.now();
   const tick = () => {
     requestAnimationFrame(tick);
-    frames += 1;
     const now = performance.now();
     if (now - lastFps >= 500) {
-      debug.setFps((frames * 1000) / (now - lastFps));
-      frames = 0;
+      debug.setFps((renderedFrames * 1000) / (now - lastFps));
+      renderedFrames = 0;
       lastFps = now;
     }
     if (!needsRender) return;
     needsRender = false;
+    renderedFrames += 1;
     pixel.render(renderer, scene, camera);
     debug.setDrawCalls(renderer.info.render.calls);
   };
@@ -203,11 +209,13 @@ export function createApp(opts: CreateAppOptions) {
 
   controls.setTarget(0, 0);
   controls.setZoom(320);
+  syncChunks();
   applyPreset(preset);
 
   return {
     dispose: () => {
       controls.dispose();
+      chunks.dispose();
       window.removeEventListener('resize', onResize);
       toggle.remove();
       pixel.dispose();
