@@ -17,10 +17,16 @@
 - 成本：純靜態、Cloudflare Pages 免費方案、PWA，之後 Capacitor
 
 ## 待決定
-- 色盤具體色票（M2）
 - 資料壓縮格式（M3）
 - LoD2 屋頂簡化程度（若之後取得 CityGML）
 - CityGML 圖幅／`kartta.hel.fi/3d` 區域下載是否可恢復為建築升級來源（不阻塞 MVP）
+
+## M2 已決定
+- 內部分辨率 480×270，nearest 放大；邊緣在 upscale shader 做
+- 色盤 day/dusk 寫在 `areas/helsinki-kruununhaka/area.config.json` → `render.palettes`（與 `core/palette.ts` 一致）
+- Preset：`?preset=dusk` 或右下角 day/dusk 按鈕
+- 拖動：抓地圖（內容跟手），觸控單指 + 滑鼠左鍵；雙指／滾輪縮放
+- 仍平屋頂（無 CityGML LoD2）
 
 ## M0 已關閉
 - 主建築來源：avoindata（非 CityGML WFS）；OSM 作道路等 + 建築補洞
