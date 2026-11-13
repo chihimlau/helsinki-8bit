@@ -1,5 +1,8 @@
 export type WorldBuilding = {
   id: string;
+  ratu?: number | null;
+  vtjPrt?: string | null;
+  osmId?: string | null;
   footprint: [number, number][];
   holes?: [number, number][][];
   height: number;
@@ -57,4 +60,18 @@ export type LoadedArea = {
   parks: WorldPoly[];
   water: WorldPoly[];
   bytesLoaded: number;
+};
+
+/** Landmark already converted to world metres (no lat/lon in core). */
+export type LandmarkWorld = {
+  id: string;
+  name: string;
+  blurb: string;
+  type: string;
+  x: number;
+  z: number;
+  priority: string;
+  buildingId?: string | null;
+  ratu?: number | null;
+  special?: 'cathedral' | 'palace' | 'library' | 'university' | null;
 };

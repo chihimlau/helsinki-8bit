@@ -1,7 +1,7 @@
 import { Group, Mesh, type Material, type Object3D } from 'three';
 import { buildingExtrude, mergeGeometries, polyGeometry, roadGeometry } from './geometry';
 import { fetchChunk, type ChunkJson } from './loadArea';
-import type { AreaManifest } from './types';
+import type { AreaManifest, WorldBuilding } from './types';
 
 type ChunkEntry = AreaManifest['chunks'][number];
 
@@ -9,12 +9,14 @@ type ActiveChunk = {
   id: string;
   group: Group;
   bytes: number;
+  buildingIds: string[];
 };
 
 export type ChunkManager = {
   sync: (centerX: number, centerZ: number, viewRadius: number) => void;
   getBytesLoaded: () => number;
   getLoadedChunkCount: () => number;
+  getBuildings: () => WorldBuilding[];
   dispose: () => void;
 };
 
@@ -26,6 +28,7 @@ function buildChunkGroup(
     water: Material;
     road: Material;
   },
+  skipBuildingIds: Set<string>,
 ): Group {
   const group = new Group();
   group.name = 'chunk';
@@ -38,14 +41,13 @@ function buildChunkGroup(
     const geos = chunk.water.map((w) => polyGeometry(w, 0.02));
     group.add(new Mesh(mergeGeometries(geos), mats.water));
   }
-  // Cap road density: keep wider roads first for perf
   const roads = [...(chunk.roads ?? [])].sort((a, b) => b.width - a.width).slice(0, 120);
   const roadGeos = roads
     .map((r) => roadGeometry(r))
     .filter((g): g is NonNullable<typeof g> => !!g);
   if (roadGeos.length) group.add(new Mesh(mergeGeometries(roadGeos), mats.road));
 
-  const buildings = chunk.buildings ?? [];
+  const buildings = (chunk.buildings ?? []).filter((b) => !skipBuildingIds.has(b.id));
   const batch = 100;
   for (let i = 0; i < buildings.length; i += batch) {
     const slice = buildings.slice(i, i + batch);
@@ -59,7 +61,6 @@ function disposeObject(obj: Object3D) {
     const m = o as Mesh;
     if (m.isMesh) {
       m.geometry?.dispose();
-      // shared materials — do not dispose here
     }
   });
 }
@@ -74,13 +75,16 @@ export function createChunkManager(opts: {
     water: Material;
     road: Material;
   };
+  skipBuildingIds?: Set<string>;
   onChange: () => void;
   initialBytes?: number;
 }): ChunkManager {
   const active = new Map<string, ActiveChunk>();
   const inflight = new Map<string, Promise<void>>();
+  const buildingMap = new Map<string, WorldBuilding>();
   let bytesLoaded = opts.initialBytes ?? 0;
   const byId = new Map(opts.manifest.chunks.map((c) => [c.id, c]));
+  const skip = opts.skipBuildingIds ?? new Set<string>();
 
   const wantedIds = (cx: number, cz: number, radius: number): Set<string> => {
     const out = new Set<string>();
@@ -90,7 +94,6 @@ export function createChunkManager(opts: {
       const midZ = (c.minZ + c.maxZ) / 2;
       const dx = midX - cx;
       const dz = midZ - cz;
-      // include if chunk AABB near view circle
       const near =
         Math.hypot(dx, dz) <= radius + pad * 0.75 ||
         (cx >= c.minX - pad &&
@@ -99,7 +102,6 @@ export function createChunkManager(opts: {
           cz <= c.maxZ + pad);
       if (near) out.add(c.id);
     }
-    // Always keep at least chunks around origin if empty
     if (out.size === 0) {
       for (const c of opts.manifest.chunks.slice(0, 4)) out.add(c.id);
     }
@@ -111,10 +113,15 @@ export function createChunkManager(opts: {
     const p = (async () => {
       try {
         const { chunk, bytes } = await fetchChunk(opts.dataBaseUrl, entry.file);
-        if (!inflight.has(entry.id)) return; // cancelled
-        const group = buildChunkGroup(chunk, opts.materials);
+        if (!inflight.has(entry.id)) return;
+        const buildingIds: string[] = [];
+        for (const b of chunk.buildings ?? []) {
+          buildingMap.set(b.id, b);
+          buildingIds.push(b.id);
+        }
+        const group = buildChunkGroup(chunk, opts.materials, skip);
         opts.scene.add(group);
-        active.set(entry.id, { id: entry.id, group, bytes });
+        active.set(entry.id, { id: entry.id, group, bytes, buildingIds });
         bytesLoaded += bytes;
         opts.onChange();
       } catch (e) {
@@ -131,8 +138,8 @@ export function createChunkManager(opts: {
     if (!a) return;
     opts.scene.remove(a.group);
     disposeObject(a.group);
+    for (const bid of a.buildingIds) buildingMap.delete(bid);
     active.delete(id);
-    // keep bytesLoaded as cumulative downloaded (debug "load" = network so far)
     opts.onChange();
   };
 
@@ -149,9 +156,11 @@ export function createChunkManager(opts: {
     },
     getBytesLoaded: () => bytesLoaded,
     getLoadedChunkCount: () => active.size,
+    getBuildings: () => [...buildingMap.values()],
     dispose: () => {
       for (const id of [...active.keys()]) unloadOne(id);
       inflight.clear();
+      buildingMap.clear();
     },
   };
 }

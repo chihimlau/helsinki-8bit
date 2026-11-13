@@ -21,6 +21,7 @@ export function attachMapControls(
     /** Fixed render-target aspect (width/height), e.g. 480/270. */
     getAspect: () => number;
     onChange: () => void;
+    onTap?: (clientX: number, clientY: number) => void;
     minFrustum?: number;
     maxFrustum?: number;
   },
@@ -32,6 +33,9 @@ export function attachMapControls(
   let activeId: number | null = null;
   let lastX = 0;
   let lastY = 0;
+  let downX = 0;
+  let downY = 0;
+  let moved = false;
   let pinchStartDist = 0;
   let pinchStartFrustum = opts.getFrustum();
 
@@ -99,6 +103,9 @@ export function attachMapControls(
     activeId = e.pointerId;
     lastX = e.clientX;
     lastY = e.clientY;
+    downX = e.clientX;
+    downY = e.clientY;
+    moved = false;
   };
 
   const onPointerMove = (e: PointerEvent) => {
@@ -106,6 +113,7 @@ export function attachMapControls(
     pointers.set(e.pointerId, { x: e.clientX, y: e.clientY });
 
     if (pointers.size >= 2) {
+      moved = true;
       const pts = [...pointers.values()];
       const dist = Math.hypot(pts[0].x - pts[1].x, pts[0].y - pts[1].y);
       if (pinchStartDist > 1) {
@@ -124,10 +132,17 @@ export function attachMapControls(
     const dy = e.clientY - lastY;
     lastX = e.clientX;
     lastY = e.clientY;
-    if (dx !== 0 || dy !== 0) panByPixels(dx, dy);
+    if (dx !== 0 || dy !== 0) {
+      if (Math.hypot(e.clientX - downX, e.clientY - downY) > 8) moved = true;
+      if (moved) panByPixels(dx, dy);
+    }
   };
 
   const onPointerUp = (e: PointerEvent) => {
+    const wasActive = activeId === e.pointerId;
+    const tap = wasActive && !moved && pointers.size <= 1;
+    const tapX = e.clientX;
+    const tapY = e.clientY;
     pointers.delete(e.pointerId);
     if (activeId === e.pointerId) activeId = null;
     try {
@@ -140,7 +155,11 @@ export function attachMapControls(
       activeId = id;
       lastX = p.x;
       lastY = p.y;
+      downX = p.x;
+      downY = p.y;
+      moved = false;
     }
+    if (tap) opts.onTap?.(tapX, tapY);
   };
 
   const onWheel = (e: WheelEvent) => {

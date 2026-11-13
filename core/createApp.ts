@@ -11,10 +11,18 @@ import {
 import { createChunkManager } from './chunkManager';
 import { attachMapControls } from './controls';
 import { createDebugPanel } from './debugPanel';
-import { createLambert, createBuildingMaterial, applyPaletteToBuildingMaterial } from './materials';
+import { createHighlight } from './highlight';
+import { createLandmarksUi } from './landmarksUi';
+import {
+  applyPaletteToBuildingMaterial,
+  createBuildingMaterial,
+  createLambert,
+} from './materials';
 import { PALETTES, resolvePreset, type PresetName } from './palette';
+import { pickBuilding } from './picking';
 import { createPixelPipeline } from './pixelPipeline';
-import type { AreaManifest } from './types';
+import { addSpecialLandmarks } from './specialBuildings';
+import type { AreaManifest, LandmarkWorld } from './types';
 
 export type CreateAppOptions = {
   container: HTMLElement;
@@ -23,6 +31,7 @@ export type CreateAppOptions = {
   manifest: AreaManifest;
   dataBaseUrl: string;
   initialBytes: number;
+  landmarks: LandmarkWorld[];
   debug: boolean;
   preset?: PresetName;
   internalWidth?: number;
@@ -85,6 +94,14 @@ export function createApp(opts: CreateAppOptions) {
 
   const pixel = createPixelPipeline(internalW, internalH, palette);
 
+  // Only skip footprints that we replace with special landmark meshes
+  const skipBuildingIds = new Set(
+    opts.landmarks
+      .filter((l) => l.special && l.buildingId)
+      .map((l) => l.buildingId as string),
+  );
+  const specialRoot = addSpecialLandmarks(scene, opts.landmarks);
+
   opts.hud.innerHTML = `${opts.manifest.attribution.join(' · ')} · <span id="preset-label">${preset}</span>`;
 
   let needsRender = true;
@@ -94,6 +111,8 @@ export function createApp(opts: CreateAppOptions) {
 
   const debug = createDebugPanel(opts.debugEl, opts.manifest, opts.debug);
   debug.setLoad(opts.initialBytes, 0, opts.manifest.chunks.length);
+
+  const highlight = createHighlight(scene, requestRender);
 
   const chunks = createChunkManager({
     scene,
@@ -105,6 +124,7 @@ export function createApp(opts: CreateAppOptions) {
       water: waterMat,
       road: roadMat,
     },
+    skipBuildingIds,
     initialBytes: opts.initialBytes,
     onChange: () => {
       debug.setLoad(
@@ -117,6 +137,8 @@ export function createApp(opts: CreateAppOptions) {
   });
 
   let syncChunks = () => undefined;
+  let landmarksUi: ReturnType<typeof createLandmarksUi> | null = null;
+
   const controls = attachMapControls(renderer.domElement, camera, {
     getFrustum: () => frustum,
     setFrustum: (f) => {
@@ -125,15 +147,46 @@ export function createApp(opts: CreateAppOptions) {
     getAspect: () => rtAspect,
     onChange: () => {
       syncChunks();
+      landmarksUi?.update();
+      requestRender();
+    },
+    onTap: (x, y) => {
+      const hit = pickBuilding(x, y, renderer.domElement, camera, chunks.getBuildings());
+      if (hit) {
+        highlight.set(hit);
+        const lm = opts.landmarks.find(
+          (l) => l.buildingId === hit.id || (l.ratu != null && l.ratu === hit.ratu),
+        );
+        if (lm) landmarksUi?.showCard(lm.id);
+      } else {
+        highlight.clear();
+      }
       requestRender();
     },
   });
 
   syncChunks = () => {
     const t = controls.getTarget();
-    const viewRadius = frustum * 0.9;
-    chunks.sync(t.x, t.z, viewRadius);
+    chunks.sync(t.x, t.z, frustum * 0.9);
   };
+
+  landmarksUi = createLandmarksUi({
+    landmarks: opts.landmarks,
+    camera,
+    canvas: renderer.domElement,
+    onJump: (lm) => {
+      controls.setTarget(lm.x, lm.z);
+      controls.setZoom(Math.min(frustum, 220));
+      syncChunks();
+      const bld = chunks
+        .getBuildings()
+        .find((b) => b.id === lm.buildingId || (lm.ratu != null && b.ratu === lm.ratu));
+      if (bld) highlight.set(bld);
+      else highlight.clear();
+      requestRender();
+    },
+    onChange: requestRender,
+  });
 
   const applyPreset = (next: PresetName) => {
     preset = next;
@@ -160,7 +213,7 @@ export function createApp(opts: CreateAppOptions) {
 
   const cams = [
     { label: 'Square', x: 0, z: 0, zoom: 280 },
-    { label: 'Cathedral', x: -15, z: -55, zoom: 200 },
+    { label: 'Cathedral', x: -16, z: -56, zoom: 200 },
     { label: 'Harbour', x: 30, z: 220, zoom: 420 },
   ];
   debug.mountCameras([
@@ -185,6 +238,7 @@ export function createApp(opts: CreateAppOptions) {
 
   const onResize = () => {
     renderer.setSize(opts.container.clientWidth, opts.container.clientHeight, false);
+    landmarksUi.update();
     requestRender();
   };
   window.addEventListener('resize', onResize);
@@ -203,6 +257,7 @@ export function createApp(opts: CreateAppOptions) {
     needsRender = false;
     renderedFrames += 1;
     pixel.render(renderer, scene, camera);
+    landmarksUi.update();
     debug.setDrawCalls(renderer.info.render.calls);
   };
   tick();
@@ -211,11 +266,15 @@ export function createApp(opts: CreateAppOptions) {
   controls.setZoom(320);
   syncChunks();
   applyPreset(preset);
+  landmarksUi.update();
 
   return {
     dispose: () => {
       controls.dispose();
       chunks.dispose();
+      highlight.dispose();
+      landmarksUi?.dispose();
+      specialRoot.removeFromParent();
       window.removeEventListener('resize', onResize);
       toggle.remove();
       pixel.dispose();

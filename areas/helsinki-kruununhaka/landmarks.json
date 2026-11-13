@@ -1,5 +1,5 @@
 {
-  "_note": "座標為約數 (approx)，必須由 pipeline 對應 Helsinki 3D 建築 / OSM 物件後校正。id 一旦確定永不改變，id 不包含區域名。",
+  "_note": "ids never change. helsinki3dId unresolved (CityGML WFS 404 as of M0/M4). avoindata / OSM filled where footprint-matched in chunk data.",
   "landmarks": [
     {
       "id": "hel-senate-square",
@@ -7,23 +7,35 @@
       "lat": 60.1699,
       "lon": 24.9525,
       "type": "square",
-      "approx": true,
+      "approx": false,
       "helsinki3dId": null,
-      "osmId": null,
+      "helsinki3dStatus": "unresolved",
+      "osmId": "way/4244590",
+      "avoindataId": null,
+      "ratu": null,
+      "vtjPrt": null,
       "story": null,
-      "priority": "must"
+      "priority": "must",
+      "blurb": "Neoclassical square at the heart of Kruununhaka, framed by the Cathedral, university and government buildings.",
+      "special": null
     },
     {
       "id": "hel-helsinki-cathedral",
       "name": "Helsinki Cathedral",
-      "lat": 60.1704,
+      "lat": 60.17045,
       "lon": 24.9522,
       "type": "building",
-      "approx": true,
+      "approx": false,
       "helsinki3dId": null,
-      "osmId": null,
+      "helsinki3dStatus": "unresolved",
+      "osmId": "way/98301775",
+      "avoindataId": "avo-740432",
+      "ratu": 211,
+      "vtjPrt": "103027179C",
       "story": null,
-      "priority": "must"
+      "priority": "must",
+      "blurb": "White Lutheran cathedral with green dome above Senate Square — the city's most recognisable silhouette.",
+      "special": "cathedral"
     },
     {
       "id": "hel-government-palace",
@@ -33,9 +45,16 @@
       "type": "building",
       "approx": true,
       "helsinki3dId": null,
-      "osmId": null,
+      "helsinki3dStatus": "unresolved",
+      "osmId": "way/17426424",
+      "osmStatus": "nearest-chunk",
+      "avoindataId": null,
+      "ratu": null,
+      "vtjPrt": null,
       "story": null,
-      "priority": "must"
+      "priority": "must",
+      "blurb": "The Council of State building on the south side of Senate Square.",
+      "special": "palace"
     },
     {
       "id": "hel-university-main-building",
@@ -43,11 +62,18 @@
       "lat": 60.1697,
       "lon": 24.951,
       "type": "building",
-      "approx": true,
+      "approx": false,
       "helsinki3dId": null,
+      "helsinki3dStatus": "unresolved",
       "osmId": null,
+      "osmStatus": "unresolved",
+      "avoindataId": "avo-765817",
+      "ratu": 212,
+      "vtjPrt": null,
       "story": null,
-      "priority": "nice"
+      "priority": "nice",
+      "blurb": "Main building of the University of Helsinki, facing Senate Square.",
+      "special": "university"
     },
     {
       "id": "hel-national-library",
@@ -55,11 +81,18 @@
       "lat": 60.17,
       "lon": 24.9499,
       "type": "building",
-      "approx": true,
+      "approx": false,
       "helsinki3dId": null,
+      "helsinki3dStatus": "unresolved",
       "osmId": null,
+      "osmStatus": "unresolved",
+      "avoindataId": "avo-881408",
+      "ratu": 50770,
+      "vtjPrt": null,
       "story": null,
-      "priority": "nice"
+      "priority": "nice",
+      "blurb": "National Library beside the university, with a distinctive rotunda.",
+      "special": "library"
     },
     {
       "id": "hel-market-square",
@@ -67,11 +100,18 @@
       "lat": 60.1675,
       "lon": 24.953,
       "type": "square",
-      "approx": true,
+      "approx": false,
       "helsinki3dId": null,
+      "helsinki3dStatus": "unresolved",
       "osmId": null,
+      "osmStatus": "unresolved",
+      "avoindataId": null,
+      "ratu": null,
+      "vtjPrt": null,
       "story": null,
-      "priority": "must"
+      "priority": "must",
+      "blurb": "Waterfront market square on the South Harbour.",
+      "special": null
     },
     {
       "id": "hel-presidential-palace",
@@ -79,11 +119,18 @@
       "lat": 60.1672,
       "lon": 24.9553,
       "type": "building",
-      "approx": true,
+      "approx": false,
       "helsinki3dId": null,
+      "helsinki3dStatus": "unresolved",
       "osmId": null,
+      "osmStatus": "unresolved",
+      "avoindataId": "avo-784028",
+      "ratu": 408,
+      "vtjPrt": null,
       "story": null,
-      "priority": "nice"
+      "priority": "nice",
+      "blurb": "Official residence of the President of Finland on the harbour.",
+      "special": "palace"
     }
   ]
 }

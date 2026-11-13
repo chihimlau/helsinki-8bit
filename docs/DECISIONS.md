@@ -20,6 +20,12 @@
 - LoD2 屋頂簡化程度（若之後取得 CityGML）
 - CityGML 圖幅／`kartta.hel.fi/3d` 區域下載是否可恢復為建築升級來源（不阻塞 MVP）
 
+## M4 已決定
+- 點擊：tap vs drag（移動 >8px 不當點）；建築 footprint 射線挑選 + 橙色 EdgesGeometry 高亮
+- 地標：HTML pin + 清單 + 資訊卡；座標在 `src/main.ts` 轉世界米（core 無 lat/lon）
+- Helsinki 3D GMLID：仍 unresolved（WFS 404）；Cathedral 用 avoindata `avo-740432` / RATU 211
+- 特別外觀：cathedral / palace / library / university 用簡單 primitive mesh，並 skip 對應 footprint
+
 ## M3 已決定
 - 資料壓縮：**A** — `chunk-*.json.gz`（pipeline `zlib.gzipSync`）+ 瀏覽器 `DecompressionStream('gzip')`；manifest `schemaVersion: 2`
 - Chunk 串流載入／卸載；PWA shell

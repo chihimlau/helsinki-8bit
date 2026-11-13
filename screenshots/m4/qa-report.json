@@ -1,0 +1,35 @@
+{
+  "desktop": {
+    "square": {
+      "text": "debug\nbuildings: 519\nmissingHeight (default): 133\nsources: helsinki-avoindata: 478, osm: 41\nLoD1 / LoD2: 519 / 0\nroads / parks / water: 2884 / 139 / 8\nload: 1081.4 KB\nchunks: 16 / 26\ndrawCalls: 1\nFPS: 0\nSquareCathedralHarbourDayDusk",
+      "pins": 7,
+      "list": true,
+      "cardDisplay": "none"
+    },
+    "cathedral": {
+      "text": "debug\nbuildings: 519\nmissingHeight (default): 133\nsources: helsinki-avoindata: 478, osm: 41\nLoD1 / LoD2: 519 / 0\nroads / parks / water: 2884 / 139 / 8\nload: 1081.4 KB\nchunks: 9 / 26\ndrawCalls: 1\nFPS: 0\nSquareCathedralHarbourDayDusk",
+      "pins": 7,
+      "list": true,
+      "cardDisplay": "none"
+    },
+    "harbour": {
+      "text": "debug\nbuildings: 519\nmissingHeight (default): 133\nsources: helsinki-avoindata: 478, osm: 41\nLoD1 / LoD2: 519 / 0\nroads / parks / water: 2884 / 139 / 8\nload: 1479.5 KB\nchunks: 12 / 26\ndrawCalls: 1\nFPS: 0\nSquareCathedralHarbourDayDusk",
+      "pins": 7,
+      "list": true,
+      "cardDisplay": "none"
+    }
+  },
+  "mobile": {
+    "text": "debug\nbuildings: 519\nmissingHeight (default): 133\nsources: helsinki-avoindata: 478, osm: 41\nLoD1 / LoD2: 519 / 0\nroads / parks / water: 2884 / 139 / 8\nload: 1081.4 KB\nchunks: 16 / 26\ndrawCalls: 1\nFPS: 0\nSquareCathedralHarbourDayDusk",
+    "pins": 7,
+    "list": true,
+    "cardDisplay": "none"
+  },
+  "interactions": {
+    "listOpensCard": true,
+    "dragOk": true
+  },
+  "errors": [
+    "Failed to load resource: the server responded with a status of 404 (Not Found)"
+  ]
+}
