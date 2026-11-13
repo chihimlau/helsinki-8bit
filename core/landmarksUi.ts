@@ -28,10 +28,11 @@ export function createLandmarksUi(opts: {
     const btn = document.createElement('button');
     btn.type = 'button';
     btn.title = lm.name;
-    btn.textContent = '▼';
+    btn.textContent = 'i';
     btn.dataset.id = lm.id;
+    // Warsaw-like yellow info pin
     btn.style.cssText =
-      'position:fixed;transform:translate(-50%,-100%);pointer-events:auto;border:none;background:#c62828;color:#fff;width:22px;height:22px;border-radius:50% 50% 50% 0;rotate:-45deg;font-size:10px;line-height:22px;padding:0;cursor:pointer;box-shadow:0 1px 3px #0008;';
+      'position:fixed;transform:translate(-50%,-100%);pointer-events:auto;border:2px solid #111;background:#f0c010;color:#111;width:26px;height:28px;border-radius:6px 6px 6px 2px;font:700 14px/26px ui-monospace,Consolas,monospace;padding:0;cursor:pointer;box-shadow:0 2px 0 #0006;z-index:4;';
     btn.addEventListener('click', (e) => {
       e.stopPropagation();
       openCard(lm);

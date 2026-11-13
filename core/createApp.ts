@@ -75,7 +75,7 @@ export function createApp(opts: CreateAppOptions) {
   const ambient = new AmbientLight(palette.ambient, palette.ambientIntensity);
   scene.add(ambient);
   const sun = new DirectionalLight(palette.sun, palette.sunIntensity);
-  sun.position.set(80, 120, 40);
+  sun.position.set(120, 160, 60);
   scene.add(sun);
 
   const b = opts.manifest.bounds;
@@ -167,7 +167,7 @@ export function createApp(opts: CreateAppOptions) {
 
   syncChunks = () => {
     const t = controls.getTarget();
-    chunks.sync(t.x, t.z, frustum * 0.9);
+    chunks.sync(t.x, t.z, Math.max(frustum * 1.15, 380));
   };
 
   landmarksUi = createLandmarksUi({
@@ -265,10 +265,22 @@ export function createApp(opts: CreateAppOptions) {
   };
   tick();
 
-  // Start near first landmark, else origin (shared city origin may be outside this area)
-  const start = opts.landmarks[0];
-  controls.setTarget(start?.x ?? 0, start?.z ?? 0);
-  controls.setZoom(320);
+  // Frame hero landmark (Cathedral / square) so Helsinki reads immediately
+  const hero =
+    opts.landmarks.find((l) => l.special === 'cathedral') ??
+    opts.landmarks.find((l) => l.special === 'square') ??
+    opts.landmarks.find((l) => l.special === 'station') ??
+    opts.landmarks[0];
+  if (hero?.special === 'cathedral') {
+    controls.setTarget(hero.x, hero.z + 45);
+    controls.setZoom(300);
+  } else if (hero) {
+    controls.setTarget(hero.x, hero.z);
+    controls.setZoom(300);
+  } else {
+    controls.setTarget(0, 0);
+    controls.setZoom(320);
+  }
   syncChunks();
   applyPreset(preset);
   landmarksUi.update();

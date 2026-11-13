@@ -20,6 +20,11 @@
 - LoD2 屋頂簡化程度（若之後取得 CityGML）
 - CityGML 圖幅／`kartta.hel.fi/3d` 區域下載是否可恢復為建築升級來源（不阻塞 MVP）
 
+## M6-look（baseline 前美術）
+- 目標：靠近 Isometric Warsaw；地標要一眼可辨（尤其 Helsinki Cathedral）
+- Cathedral／Square／Station 等用強化 special mesh；黃底 `i` pin
+- 立面窗戶 shader 加密、道路加寬、色盤對比提高；仍不用圖像生成／CityGML mesh
+
 ## M5 已決定
 - 第二區 `helsinki-kluuvi`：同 city origin（Senate Square），bbox 與 kruununhaka 西緣重疊以便拼接驗證
 - 區域切換：`areas/catalog.json` + `?area=` + UI 在 `src/main.ts`（不進 core）

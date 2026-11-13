@@ -75,7 +75,8 @@ export function polyGeometry(poly: WorldPoly, y = 0.05): BufferGeometry {
 /** Simple ribbon for roads. */
 export function roadGeometry(road: WorldLine, y = 0.08): BufferGeometry | null {
   if (road.points.length < 2) return null;
-  const half = road.width / 2;
+  // Slightly wider ribbons so streets read at 480×270
+  const half = Math.max(road.width * 1.35, 5) / 2;
   const left: [number, number][] = [];
   const right: [number, number][] = [];
   for (let i = 0; i < road.points.length; i++) {

@@ -73,5 +73,5 @@ export type LandmarkWorld = {
   priority: string;
   buildingId?: string | null;
   ratu?: number | null;
-  special?: 'cathedral' | 'palace' | 'library' | 'university' | null;
+  special?: 'cathedral' | 'palace' | 'library' | 'university' | 'square' | 'station' | null;
 };
